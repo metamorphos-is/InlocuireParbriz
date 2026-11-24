@@ -26,7 +26,7 @@ return new class extends Migration
                 'meta_description' => $p['excerpt'],
                 'faq' => json_encode($p['faq'], JSON_UNESCAPED_UNICODE),
                 'related_service' => $p['related_service'],
-                'author' => 'Echipa Înlocuire Parbriz',
+                'author' => 'Echipa inlocuireparbriz.ro',
                 'is_published' => true,
                 'published_at' => $now->copy()->subMinutes(10 - $i),
                 'created_at' => $now,

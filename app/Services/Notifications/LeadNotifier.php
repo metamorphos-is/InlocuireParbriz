@@ -59,7 +59,7 @@ class LeadNotifier
         }
 
         $tpl = NotificationTemplate::query()->where('key', $templateKey)->where('is_active', true)->first();
-        $body = $this->render($tpl?->body ?? 'Cerere {reference} — InlocuireParbriz.ro', $vars);
+        $body = $this->render($tpl?->body ?? 'Cerere {reference} — inlocuireparbriz.ro', $vars);
 
         $client = new SmsoClient((string) SettingSecret::reveal($smso['api_key'] ?? ''));
         $sender = $smso['sender'] ?? '';
@@ -105,7 +105,7 @@ class LeadNotifier
             $mailer->raw($body, function ($message) use ($to, $subject, $smtp) {
                 $message->to($to)->subject($subject);
                 if (! empty($smtp['from_address'])) {
-                    $message->from($smtp['from_address'], $smtp['from_name'] ?? 'InlocuireParbriz');
+                    $message->from($smtp['from_address'], $smtp['from_name'] ?? 'inlocuireparbriz.ro');
                 }
             });
             $this->log('email', $templateKey, $to, 'sent', [], $leadId);

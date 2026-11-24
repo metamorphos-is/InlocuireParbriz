@@ -2,7 +2,7 @@
 
 /*
 |--------------------------------------------------------------------------
-| Înlocuire Parbriz — catalog public (București + Ilfov)
+| inlocuireparbriz.ro — catalog public
 |--------------------------------------------------------------------------
 | Sursă unică pentru paginile publice: servicii (landing-uri SEO), sectoare,
 | opțiuni de formular. Chei = slug-urile din docs/discovery/url-architecture.md.
@@ -15,9 +15,9 @@
 
 return [
 
-    'brand' => 'Înlocuire Parbriz',
-    'domain' => 'InlocuireParbriz.ro',
-    'team' => 'Echipa Înlocuire Parbriz',
+    'brand' => 'inlocuireparbriz.ro',
+    'domain' => 'inlocuireparbriz.ro',
+    'team' => 'Echipa inlocuireparbriz.ro',
     'city' => 'București',
     'city_slug' => 'bucuresti',
     'sectors' => [1, 2, 3, 4, 5, 6],

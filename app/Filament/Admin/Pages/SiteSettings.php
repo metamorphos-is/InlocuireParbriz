@@ -54,7 +54,7 @@ class SiteSettings extends Page implements HasSchemas
         $this->form->fill([
             'company' => Company::all(),
             'brand' => [
-                'name' => $brand['name'] ?? 'InlocuireParbriz',
+                'name' => $brand['name'] ?? 'inlocuireparbriz.ro',
                 'tagline' => $brand['tagline'] ?? '',
                 'team' => $brand['team'] ?? '',
             ],
@@ -66,7 +66,7 @@ class SiteSettings extends Page implements HasSchemas
                 'password' => '', // mascat: nu se afișează niciodată
                 'encryption' => $smtp['encryption'] ?? 'ssl',
                 'from_address' => $smtp['from_address'] ?? '',
-                'from_name' => $smtp['from_name'] ?? 'InlocuireParbriz',
+                'from_name' => $smtp['from_name'] ?? 'inlocuireparbriz.ro',
             ],
             'smso' => [
                 'enabled' => (bool) ($smso['enabled'] ?? false),

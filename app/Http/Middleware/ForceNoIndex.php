@@ -2,13 +2,14 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Seo;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Pre-lansare: toate răspunsurile publice primesc X-Robots-Tag noindex.
- * Se elimină (sau se condiționează prin config) doar la aprobarea lansării.
+ * X-Robots-Tag noindex pe toate răspunsurile cât timp e activ comutatorul din Setări site → SEO
+ * (pre-lansare). Admin și portalul de parteneri nu se indexează niciodată.
  */
 class ForceNoIndex
 {
@@ -16,7 +17,9 @@ class ForceNoIndex
     {
         $response = $next($request);
 
-        $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+        if (Seo::noindex() || $request->is('admin', 'admin/*', 'portal', 'portal/*', 'cerere-oferta/multumim*')) {
+            $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+        }
 
         return $response;
     }

@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Cere o ofertă pentru parbriz | InlocuireParbriz')
+@section('title', 'Cere o ofertă pentru parbriz | inlocuireparbriz.ro')
 @section('description', 'Completează câteva detalii despre mașină și geamul de care ai nevoie. Dacă poți, atașează fotografii pentru identificarea variantei potrivite.')
 
 @section('content')

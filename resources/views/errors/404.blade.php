@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Pagina nu a fost găsită — InlocuireParbriz')
+@section('title', 'Pagina nu a fost găsită | inlocuireparbriz.ro')
 @section('description', 'Pagina căutată nu există.')
 
 @section('content')

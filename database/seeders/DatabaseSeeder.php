@@ -114,20 +114,20 @@ class DatabaseSeeder extends Seeder
             [
                 'key' => 'lead.admin_email',
                 'channel' => 'email',
-                'subject' => 'Cerere nouă {reference} — InlocuireParbriz',
+                'subject' => 'Cerere nouă {reference} — inlocuireparbriz.ro',
                 'body' => "Cerere {reference}\nClient: {customer_name}\nTelefon: {phone}\nVehicul: {vehicle_brand} {vehicle_model} {vehicle_year}\nGeam: {glass_type}\nMesaj: {description}",
             ],
             [
                 'key' => 'lead.customer_sms',
                 'channel' => 'sms',
                 'subject' => null,
-                'body' => 'InlocuireParbriz: am primit solicitarea {reference}. Te contactăm în curând.',
+                'body' => 'inlocuireparbriz.ro: am primit solicitarea {reference}. Te contactăm în curând.',
             ],
             [
                 'key' => 'lead.provider_sms',
                 'channel' => 'sms',
                 'subject' => null,
-                'body' => 'InlocuireParbriz: cerere {reference} alocată. Detalii în portal.',
+                'body' => 'inlocuireparbriz.ro: cerere {reference} alocată. Detalii în portal.',
             ],
             [
                 'key' => 'lead.provider_email',
@@ -145,8 +145,8 @@ class DatabaseSeeder extends Seeder
         }
 
         SiteSetting::setValue('brand', [
-            'name' => 'InlocuireParbriz',
-            'team' => 'Înlocuire Parbriz',
+            'name' => 'inlocuireparbriz.ro',
+            'team' => 'Echipa inlocuireparbriz.ro',
             'tagline' => 'Înlocuire și reparații parbrize în București',
         ]);
 
@@ -163,7 +163,7 @@ class DatabaseSeeder extends Seeder
             'password' => '',
             'encryption' => 'ssl',
             'from_address' => 'noreply@inlocuireparbriz.ro',
-            'from_name' => 'InlocuireParbriz',
+            'from_name' => 'inlocuireparbriz.ro',
             'admin_notify_to' => 'admin@inlocuireparbriz.ro',
         ]);
 

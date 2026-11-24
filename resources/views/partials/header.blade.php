@@ -11,7 +11,7 @@
     <div class="container ip-header__bar">
         <a class="ip-logo" href="{{ route('home') }}" aria-label="{{ $company['brand'] }} — pagina principală">
             <span class="ip-logo__mark" aria-hidden="true">@include('partials.icon', ['name' => 'windshield', 'size' => 22])</span>
-            <span class="ip-logo__text"><span class="ip-logo__name">Înlocuire<strong>Parbriz</strong></span><small>Sticlă auto, montată corect</small></span>
+            <span class="ip-logo__text"><span class="ip-logo__name">inlocuire<strong>parbriz</strong><span class="ip-logo__tld">.ro</span></span><small>Sticlă auto, montată corect</small></span>
         </a>
 
         <nav class="ip-nav" id="ip-nav" aria-label="Navigare principală" data-ip-nav>

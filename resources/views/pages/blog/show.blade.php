@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', $post->seo_title ?: $post->title.' | Înlocuire Parbriz')
+@section('title', $post->seo_title ?: $post->title.' | inlocuireparbriz.ro')
 @section('description', $post->meta_description ?: $post->excerpt)
 
 @section('content')
@@ -19,8 +19,8 @@
             <h1 class="ip-hero__title">{{ $post->title }}</h1>
             <p class="ip-hero__lead">{{ $post->excerpt }}</p>
             <p class="ip-post-card__meta">
-                {{ $post->author ?: 'Echipa Înlocuire Parbriz' }}
-                @if ($post->published_at) · <time datetime="{{ $post->published_at->toDateString() }}">{{ $post->published_at->translatedFormat('j F Y') }}</time>@endif
+                {{ $post->author ?: 'Echipa inlocuireparbriz.ro' }}
+                @if ($post->published_at) · <time datetime="{{ $post->published_at->toDateString() }}">{{ $post->published_at->locale('ro')->translatedFormat('j F Y') }}</time>@endif
                 · {{ $post->readingMinutes() }} min de citit
             </p>
         </div>
@@ -104,7 +104,7 @@
             'description' => $post->meta_description ?: $post->excerpt,
             'datePublished' => optional($post->published_at)->toAtomString(),
             'dateModified' => $post->updated_at?->toAtomString(),
-            'author' => ['@type' => 'Organization', 'name' => $post->author ?: 'Echipa Înlocuire Parbriz'],
+            'author' => ['@type' => 'Organization', 'name' => $post->author ?: 'Echipa inlocuireparbriz.ro'],
             'publisher' => ['@id' => url('/').'#organization'],
             'mainEntityOfPage' => $post->url(),
             'inLanguage' => 'ro-RO',

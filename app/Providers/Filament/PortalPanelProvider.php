@@ -30,7 +30,8 @@ class PortalPanelProvider extends PanelProvider
             ->id('portal')
             ->path('portal')
             ->login()
-            ->brandName('Portal Partener')
+            ->brandName('Portal parteneri')
+            ->favicon('/assets/img/favicon.svg?v=2')
             ->colors([
                 'primary' => Color::Blue,
             ])

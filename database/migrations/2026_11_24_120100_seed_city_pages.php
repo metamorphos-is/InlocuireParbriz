@@ -34,7 +34,7 @@ return new class extends Migration
                     'schimbare parbriz '.mb_strtolower($c['name']),
                 ], JSON_UNESCAPED_UNICODE),
                 'search_volume' => $c['volume'],
-                'seo_title' => "Parbrize {$c['name']} – înlocuire și montaj parbriz | Înlocuire Parbriz",
+                'seo_title' => "Parbrize {$c['name']} – înlocuire și montaj parbriz | inlocuireparbriz.ro",
                 'meta_description' => "Înlocuire parbriz în {$c['name']}: ofertă pe tipul corect de sticlă (senzori, cameră, încălzire) și montaj prin ateliere partenere verificate. Îți confirmăm disponibilitatea.",
                 'h1' => "Înlocuire parbriz în {$c['name']}",
                 'intro' => $c['intro'],

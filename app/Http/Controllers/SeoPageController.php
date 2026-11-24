@@ -12,10 +12,10 @@ class SeoPageController extends Controller
     protected array $staticPages = [
         'despre-noi' => [
             'name' => 'Despre noi',
-            'h1' => 'Despre Înlocuire Parbriz',
-            'title' => 'Despre Înlocuire Parbriz | Cum funcționează',
-            'meta' => 'Cum funcționează Înlocuire Parbriz: preluăm cererea, identificăm sticla potrivită și o trimitem unui atelier partener verificat din zona ta.',
-            'intro' => 'Înlocuire Parbriz te ajută să rezolvi rapid un parbriz, o lunetă sau un geam lateral deteriorat. Primești oferta și montajul prin atelierele partenere verificate din orașul tău: noi preluăm cererea, verificăm ce sticlă se potrivește mașinii și o trimitem atelierului potrivit din zona ta.',
+            'h1' => 'Despre inlocuireparbriz.ro',
+            'title' => 'Despre noi și cum funcționează | inlocuireparbriz.ro',
+            'meta' => 'Cum funcționează inlocuireparbriz.ro: preluăm cererea, identificăm sticla potrivită și o trimitem unui atelier partener verificat din zona ta.',
+            'intro' => 'inlocuireparbriz.ro te ajută să rezolvi rapid un parbriz, o lunetă sau un geam lateral deteriorat. Primești oferta și montajul prin atelierele partenere verificate din orașul tău: noi preluăm cererea, verificăm ce sticlă se potrivește mașinii și o trimitem atelierului potrivit din zona ta.',
             'items' => [
                 'Identificăm sticla după datele reale ale mașinii',
                 'Îți comunicăm oferta înainte de programare',
@@ -29,9 +29,9 @@ class SeoPageController extends Controller
                 ['Transparență', 'Nu publicăm prețuri inventate, nu inventăm parteneriate cu asigurători și nu pretindem ateliere acolo unde nu avem. În București și Ilfov lucrăm deja; pentru alte orașe îți confirmăm disponibilitatea odată cu oferta.'],
             ],
             'faq' => [
-                ['Cine îmi face montajul?', 'Un atelier partener verificat din zona ta. Echipa Înlocuire Parbriz preia cererea, verifică detaliile mașinii și o transmite atelierului potrivit, care îți face oferta și lucrarea.'],
+                ['Cine îmi face montajul?', 'Un atelier partener verificat din zona ta. Echipa inlocuireparbriz.ro preia cererea, verifică detaliile mașinii și o transmite atelierului potrivit, care îți face oferta și lucrarea.'],
                 ['Unde lucrați?', 'În București (sectoarele 1–6) și Ilfov. Pentru alte orașe din țară, trimite cererea: îți confirmăm disponibilitatea unui atelier partener în zona ta înainte de orice angajament.'],
-                ['Cum încep?', 'Din pagina Solicită ofertă: trimite detaliile mașinii și, dacă poți, o fotografie cu avaria.'],
+                ['Cum încep?', 'Din pagina „Cere ofertă”: trimite detaliile mașinii și, dacă poți, o fotografie cu avaria.'],
             ],
         ],
     ];
@@ -45,21 +45,21 @@ class SeoPageController extends Controller
         $page = $service ?? $static;
 
         $titleOverrides = [
-            'inlocuire-parbriz-bucuresti' => 'Înlocuire Parbriz București | Montaj Profesional',
-            'inlocuire-parbriz-la-domiciliu' => 'Înlocuire Parbriz la Domiciliu București | Montaj Mobil',
-            'reparatie-parbriz' => 'Reparație Parbriz Ciobit București | Evaluare și Ofertă',
-            'pret-inlocuire-parbriz' => 'Cât Costă Înlocuirea unui Parbriz? | Cere Ofertă',
-            'calibrare-adas' => 'Calibrare ADAS după Schimbarea Parbrizului | București',
-            'parbriz-pe-casco' => 'Înlocuire Parbriz prin CASCO | Pași și Documente',
-            'parbrize-flote-firme' => 'Parbrize pentru Flote și Firme | Ofertă B2B',
-            'inlocuire-luneta-si-geamuri-laterale' => 'Înlocuire Lunetă și Geamuri Laterale | București',
-            'inlocuire-parbriz-ilfov' => 'Înlocuire Parbriz Ilfov | Disponibilitate pe Localitate',
+            'inlocuire-parbriz-bucuresti' => 'Înlocuire parbriz București – montaj la atelier sau acasă | inlocuireparbriz.ro',
+            'inlocuire-parbriz-la-domiciliu' => 'Înlocuire parbriz la domiciliu în București – montaj mobil | inlocuireparbriz.ro',
+            'reparatie-parbriz' => 'Reparație parbriz ciobit sau fisurat – evaluare și ofertă | inlocuireparbriz.ro',
+            'pret-inlocuire-parbriz' => 'Cât costă înlocuirea unui parbriz? Preț după mașină | inlocuireparbriz.ro',
+            'calibrare-adas' => 'Calibrare ADAS după schimbarea parbrizului | inlocuireparbriz.ro',
+            'parbriz-pe-casco' => 'Înlocuire parbriz prin CASCO – pași și documente | inlocuireparbriz.ro',
+            'parbrize-flote-firme' => 'Parbrize pentru flote și firme – ofertă pentru companii | inlocuireparbriz.ro',
+            'inlocuire-luneta-si-geamuri-laterale' => 'Înlocuire lunetă și geamuri laterale | inlocuireparbriz.ro',
+            'inlocuire-parbriz-ilfov' => 'Înlocuire parbriz Ilfov – disponibilitate pe localitate | inlocuireparbriz.ro',
         ];
 
         $meta = [
             'title' => $titleOverrides[$slug]
                 ?? ($page['title'] ?? null)
-                ?? (($page['h1'] ?? $page['name']).' | InlocuireParbriz.ro'),
+                ?? (($page['h1'] ?? $page['name']).' | inlocuireparbriz.ro'),
             'description' => $page['meta'] ?? ($page['short'] ?? ''),
             'h1' => $page['h1'] ?? $page['name'],
         ];
@@ -105,7 +105,7 @@ class SeoPageController extends Controller
             'sector' => $sector,
             'local' => $local,
             'meta' => [
-                'title' => "Înlocuire parbriz Sectorul {$n} București | InlocuireParbriz.ro",
+                'title' => "Înlocuire parbriz Sectorul {$n}, București | inlocuireparbriz.ro",
                 'description' => "Înlocuire parbriz în Sectorul {$n}, București".($areasText ? " ({$areasText})" : '').'. Trimite detaliile mașinii și solicită ofertă.',
                 'h1' => "Înlocuire parbriz în Sectorul {$n}",
             ],

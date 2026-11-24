@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', ($category ? \App\Models\Post::CATEGORIES[$category].' – ' : '').'Blog despre parbrize: ghiduri, reparații și sfaturi | Înlocuire Parbriz')
+@section('title', ($category ? \App\Models\Post::CATEGORIES[$category].' – blog despre parbrize' : 'Blog despre parbrize').': ghiduri, reparații și sfaturi | inlocuireparbriz.ro')
 @section('description', 'Ghiduri despre parbrize: ce faci la o ciobitură sau o fisură, cum alegi sticla potrivită, cât durează montajul și când e nevoie de calibrare ADAS.')
 
 @section('content')

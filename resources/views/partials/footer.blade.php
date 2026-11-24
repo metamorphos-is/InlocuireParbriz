@@ -9,7 +9,7 @@
         <div class="row gy-4">
             <div class="col-md-6 col-lg-3">
                 <a class="ee-logo ee-logo--light" href="{{ route('home') }}">
-                    <span class="ee-logo__text">Înlocuire<strong>Parbriz</strong></span>
+                    <span class="ee-logo__text">inlocuire<strong>parbriz</strong>.ro</span>
                 </a>
                 <p class="ee-footer__text mt-3">Înlocuire și reparație parbrize, lunete și geamuri laterale. Trimiți detaliile mașinii, iar oferta și montajul vin prin atelierele partenere verificate din zona ta.</p>
                 <a href="{{ route('lead.create') }}" class="ee-btn ee-btn--amber mt-2">Solicită ofertă</a>

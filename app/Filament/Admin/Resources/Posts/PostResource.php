@@ -84,7 +84,7 @@ class PostResource extends Resource
                 ]),
                 Tab::make('Publicare')->columns(2)->schema([
                     Select::make('category')->label('Categorie')->options(Post::CATEGORIES)->default('ghiduri')->required(),
-                    TextInput::make('author')->label('Autor')->default('Echipa Înlocuire Parbriz'),
+                    TextInput::make('author')->label('Autor')->default('Echipa inlocuireparbriz.ro'),
                     Toggle::make('is_published')->label('Publicat')->default(false),
                     DateTimePicker::make('published_at')->label('Data publicării')->default(now())
                         ->helperText('O dată din viitor programează articolul.'),

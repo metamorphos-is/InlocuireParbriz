@@ -52,3 +52,9 @@ Proiectul e lucrat de mai mulți asistenți AI. Ca să nu ne călcăm pe picioar
 - Datele firmei se editează din admin (Setări site → Date firmă, `App\Support\Company`). Cât timp „Date de test” e activ, nu intră în Schema.org.
 - Site-ul e `noindex` până când proprietarul spune „lansare”.
 - Starea proiectului și deciziile: vezi `docs/` din repo.
+
+## 7. Scriere (decizia proprietarului, 24.11.2026)
+- Titluri, H1–H4, meniuri, butoane: **ca în română** — majusculă doar la începutul propoziției, la nume proprii (orașe, cartiere, județe) și la acronime (ADAS, CASCO). Fără „Title Case” și fără `text-transform: uppercase`.
+- Numele site-ului se scrie `inlocuireparbriz.ro` (titluri: „… | inlocuireparbriz.ro”). Testul `tests/Feature/TitleCaseTest.php` verifică automat.
+- Favicon: `public/assets/img/favicon.svg` + `public/favicon.ico` (parbriz portocaliu pe fond închis).
+- Indexarea se pornește dintr-un singur loc: admin → Setări site → SEO → „noindex” (meta, `X-Robots-Tag` și `/robots.txt` urmează comutatorul). Redirecționările stau în tabela `redirects` (middleware `HandleRedirects`).

@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'InlocuireParbriz — Înlocuire parbriz București')</title>
-    <meta name="description" content="@yield('description', 'InlocuireParbriz: înlocuire și reparații parbrize în București, montaj la domiciliu când condițiile permit.')">
+    <title>@yield('title', 'Înlocuire parbriz în toată țara | inlocuireparbriz.ro')</title>
+    <meta name="description" content="@yield('description', 'Înlocuire, schimbare și montaj parbriz prin ateliere partenere verificate din orașul tău.')">
 
     {{-- Pre-lansare: noindex pe toate paginile publice (vezi și middleware ForceNoIndex + robots.txt) --}}
     <meta name="robots" content="noindex, nofollow">
@@ -12,13 +12,15 @@
 
     <meta property="og:locale" content="ro_RO">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="InlocuireParbriz">
-    <meta property="og:title" content="@yield('title', 'InlocuireParbriz — Înlocuire parbriz București')">
-    <meta property="og:description" content="@yield('description', 'Trimite o cerere pentru înlocuire sau reparație parbriz în București.')">
+    <meta property="og:site_name" content="inlocuireparbriz.ro">
+    <meta property="og:title" content="@yield('title', 'Înlocuire parbriz în toată țara | inlocuireparbriz.ro')">
+    <meta property="og:description" content="@yield('description', 'Înlocuire, schimbare și montaj parbriz prin ateliere partenere verificate din orașul tău.')">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta name="theme-color" content="#0F2A4A">
 
-    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/img/favicon.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/img/favicon.svg') }}?v=2">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=2" sizes="48x48">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}">
     <link rel="preload" href="{{ asset('assets/fonts/manrope-latin-800.woff2') }}" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/inlocuireparbriz.css') }}?v={{ @filemtime(public_path('assets/css/inlocuireparbriz.css')) }}">

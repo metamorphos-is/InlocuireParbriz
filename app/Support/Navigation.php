@@ -16,7 +16,7 @@ final class Navigation
         $byKey = collect($fixed)->keyBy('key');
 
         try {
-            $cities = Cache::remember('nav:cities:v1', 600, fn () => City::query()->withPublicPage()
+            $cities = Cache::remember('nav:cities:v2', 600, fn () => City::query()->withPublicPage()
                 ->orderBy('sort_order')->orderBy('name')
                 ->get(['name', 'slug', 'region', 'county'])
                 ->map(fn ($c) => ['name' => $c->name, 'slug' => $c->slug, 'region' => $c->region, 'county' => $c->county])
@@ -42,7 +42,7 @@ final class Navigation
                 'main' => ['label' => 'Cere ofertă din '.$label, 'url' => '/cerere-oferta?zona=alt_oras'],
                 'items' => array_map(fn ($c) => [
                     'label' => $c['name'],
-                    'hint' => $c['county'] && $c['county'] !== $c['name'] ? 'județul '.$c['county'] : 'Parbrize '.$c['name'],
+                    'hint' => $c['county'] ? 'județul '.$c['county'] : 'înlocuire și montaj',
                     'url' => '/inlocuire-parbriz-'.$c['slug'],
                     'title' => 'Parbrize '.$c['name'],
                 ], $items),
@@ -56,7 +56,7 @@ final class Navigation
 
     public static function forget(): void
     {
-        Cache::forget('nav:cities:v1');
+        Cache::forget('nav:cities:v2');
         Cache::forget('home:cities:v1');
     }
 }

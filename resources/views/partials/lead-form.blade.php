@@ -164,7 +164,7 @@
             <div class="col-12">
                 <div class="ee-check">
                     <input type="checkbox" id="consent" name="consent" value="1" @checked(old('consent')) @class(['is-invalid' => $errors->has('consent')]) required>
-                    <label for="consent">Sunt de acord ca Înlocuire Parbriz să îmi prelucreze datele pentru a mă contacta în legătură cu această cerere, conform <a href="{{ route('privacy') }}" target="_blank" rel="noopener">politicii de confidențialitate</a>. <span aria-hidden="true">*</span></label>
+                    <label for="consent">Sunt de acord ca inlocuireparbriz.ro să îmi prelucreze datele pentru a mă contacta în legătură cu această cerere, conform <a href="{{ route('privacy') }}" target="_blank" rel="noopener">politicii de confidențialitate</a>. <span aria-hidden="true">*</span></label>
                 </div>
                 @error('consent')<div class="ee-error">{{ $message }}</div>@enderror
             </div>

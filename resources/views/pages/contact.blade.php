@@ -1,11 +1,11 @@
 @extends('layouts.public')
 
-@section('title', 'Contact – Înlocuire Parbriz')
+@section('title', 'Contact | inlocuireparbriz.ro')
 @section('description', 'Ai nevoie de un parbriz nou, de o reparație sau de înlocuirea unui geam lateral? Trimite detaliile mașinii și îți răspundem pentru ofertă și programare.')
 
 @section('content')
 @include('partials.page-title', [
-    'title' => 'Contact – Înlocuire Parbriz',
+    'title' => 'Contact | inlocuireparbriz.ro',
     'lead' => 'Ai nevoie de un parbriz nou, de o reparație sau de înlocuirea unui geam lateral? Trimite-ne detaliile mașinii și îți răspundem pentru a discuta oferta și programarea.',
     'crumbs' => [['Acasă', route('home')], ['Contact', null]],
 ])

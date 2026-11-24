@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
-@section('title', 'Politica de confidențialitate — Înlocuire Parbriz')
-@section('description', 'Cum prelucrează Înlocuire Parbriz datele personale transmise prin formularul de cerere de ofertă.')
+@section('title', 'Politica de confidențialitate | inlocuireparbriz.ro')
+@section('description', 'Cum prelucrează inlocuireparbriz.ro datele personale transmise prin formularul de cerere de ofertă.')
 
 @section('content')
 @include('partials.page-title', [

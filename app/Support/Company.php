@@ -12,7 +12,7 @@ use Throwable;
 final class Company
 {
     public const DEFAULTS = [
-        'brand' => 'Înlocuire Parbriz',
+        'brand' => 'inlocuireparbriz.ro',
         'legal_name' => 'Firma Exemplu SRL',
         'cui' => 'RO00000000',
         'reg_com' => 'J40/0000/2026',
@@ -20,7 +20,7 @@ final class Company
         'whatsapp' => '',
         'email' => 'contact@inlocuireparbriz.ro',
         'address' => 'București',
-        'hours' => 'Luni – Vineri, 09:00 – 18:00',
+        'hours' => 'luni – vineri, 09:00 – 18:00',
         'is_test' => true,
     ];
 

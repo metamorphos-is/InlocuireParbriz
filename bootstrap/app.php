@@ -12,8 +12,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Pre-lansare: noindex pe toate răspunsurile web
-        $middleware->web(append: [
+        // Redirecționări din admin (înainte de rutare), apoi noindex cât timp site-ul nu e lansat.
+        $middleware->web(prepend: [
+            \App\Http\Middleware\HandleRedirects::class,
+        ], append: [
             \App\Http\Middleware\ForceNoIndex::class,
         ]);
     })

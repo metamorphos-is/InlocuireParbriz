@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Înlocuire parbriz în toată țara | Schimbare și montaj parbriz')
+@section('title', 'Înlocuire parbriz în toată țara – schimbare și montaj | inlocuireparbriz.ro')
 @section('description', 'Înlocuire, schimbare și montaj parbriz prin ateliere partenere verificate din orașul tău. Trimite marca, modelul și anul mașinii și primești oferta pe sticla potrivită.')
 
 @section('content')

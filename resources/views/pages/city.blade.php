@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', $city->seo_title ?: "Înlocuire parbriz {$city->name} | Înlocuire Parbriz")
+@section('title', $city->seo_title ?: "Înlocuire parbriz {$city->name} | inlocuireparbriz.ro")
 @section('description', $city->meta_description ?: $city->intro)
 
 @section('content')

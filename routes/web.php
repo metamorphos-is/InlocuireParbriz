@@ -11,6 +11,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
 
+Route::get('/robots.txt', function () {
+    $lines = \App\Support\Seo::noindex()
+        ? ['User-agent: *', 'Disallow: /']
+        : ['User-agent: *', 'Disallow: /admin', 'Disallow: /portal', 'Disallow: /cerere-oferta/multumim', '', 'Sitemap: '.url('/sitemap.xml')];
+
+    return response(implode("\n", $lines)."\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+})->name('robots');
+
 $seoSlugs = [
     'inlocuire-parbriz-bucuresti',
     'inlocuire-parbriz-la-domiciliu',

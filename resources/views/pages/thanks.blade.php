@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
-@section('title', 'Cerere trimisă — InlocuireParbriz')
-@section('description', 'Am primit cererea ta. Echipa Înlocuire Parbriz te contactează în curând.')
+@section('title', 'Cerere trimisă | inlocuireparbriz.ro')
+@section('description', 'Am primit cererea ta. Echipa inlocuireparbriz.ro te contactează în curând.')
 
 @section('content')
 <section class="ee-section">
@@ -11,7 +11,7 @@
         @if (session('lead_reference'))
             <p class="ee-lead">Număr de referință: <strong>{{ session('lead_reference') }}</strong></p>
         @endif
-        <p>Echipa Înlocuire Parbriz îți preia cererea și te contactează pe telefonul lăsat în formular.</p>
+        <p>Echipa inlocuireparbriz.ro îți preia cererea și te contactează pe telefonul lăsat în formular.</p>
         <div class="ee-actions justify-content-center">
             <a href="{{ route('home') }}" class="ee-btn ee-btn--amber">Înapoi la prima pagină</a>
             <a href="{{ url('/inlocuire-parbriz-bucuresti') }}" class="ee-btn ee-btn--outline">Vezi serviciile</a>

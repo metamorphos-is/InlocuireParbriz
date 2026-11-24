@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Servicii sticlă auto: parbriz, lunetă, geamuri laterale | Înlocuire Parbriz')
+@section('title', 'Servicii sticlă auto: parbriz, lunetă, geamuri laterale | inlocuireparbriz.ro')
 @section('description', 'Toate serviciile pentru sticlă auto: înlocuire parbriz, reparație ciobitură, lunetă și geamuri laterale, calibrare ADAS, montaj la domiciliu, CASCO și flote.')
 
 @section('content')

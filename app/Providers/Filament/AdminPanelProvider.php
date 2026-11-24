@@ -31,7 +31,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('InlocuireParbriz Admin')
+            ->brandName('InlocuireParbriz.ro – admin')
+            ->favicon('/assets/img/favicon.svg?v=2')
             ->colors([
                 'primary' => Color::Amber,
             ])

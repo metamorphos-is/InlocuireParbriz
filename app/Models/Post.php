@@ -65,6 +65,6 @@ class Post extends Model
 
     public function readingMinutes(): int
     {
-        return max(1, (int) round(str_word_count(strip_tags((string) $this->body)) / 200));
+        return max(1, (int) round(count(preg_split('/\s+/u', trim(strip_tags((string) $this->body)))) / 200));
     }
 }
