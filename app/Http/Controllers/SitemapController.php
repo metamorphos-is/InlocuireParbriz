@@ -28,6 +28,11 @@ class SitemapController extends Controller
             ];
         }
 
+        $urls[] = ['loc' => route('blog.index'), 'changefreq' => 'weekly', 'priority' => '0.6'];
+        foreach (\App\Models\Post::query()->published()->orderByDesc('published_at')->get(['slug', 'updated_at']) as $post) {
+            $urls[] = ['loc' => $post->url(), 'changefreq' => 'monthly', 'priority' => '0.6'];
+        }
+
         $urls[] = ['loc' => route('services'), 'changefreq' => 'weekly', 'priority' => '0.8'];
         $urls[] = ['loc' => route('contact'), 'changefreq' => 'monthly', 'priority' => '0.5'];
         $urls[] = ['loc' => route('lead.create'), 'changefreq' => 'monthly', 'priority' => '0.6'];

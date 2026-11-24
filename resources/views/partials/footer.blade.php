@@ -1,4 +1,9 @@
-@php($company = \App\Support\Company::all())
+@php
+    $company = \App\Support\Company::all();
+    $footerCities = collect(\App\Support\Navigation::locationRegions())
+        ->reject(fn ($r) => in_array($r['key'] ?? '', ['bucuresti', 'ilfov', 'alte'], true))
+        ->flatMap(fn ($r) => $r['items'] ?? [])->take(9);
+@endphp
 <footer class="ee-footer">
     <div class="container">
         <div class="row gy-4">
@@ -12,7 +17,7 @@
             <div class="col-6 col-lg-3">
                 <h2 class="ee-footer__title">Servicii</h2>
                 <ul class="ee-footer__list">
-                    <li><a href="{{ url('/inlocuire-parbriz-bucuresti') }}">Înlocuire parbriz București</a></li>
+                    <li><a href="{{ route('lead.create') }}">Înlocuire parbriz</a></li>
                     <li><a href="{{ url('/inlocuire-parbriz-la-domiciliu') }}">Înlocuire parbriz la domiciliu</a></li>
                     <li><a href="{{ url('/reparatie-parbriz') }}">Reparație parbriz</a></li>
                     <li><a href="{{ url('/inlocuire-luneta-si-geamuri-laterale') }}">Înlocuire lunetă</a></li>
@@ -24,17 +29,19 @@
                 </ul>
             </div>
             <div class="col-6 col-lg-3">
-                <h2 class="ee-footer__title">Înlocuire parbriz București</h2>
+                <h2 class="ee-footer__title">Parbrize în orașul tău</h2>
                 <ul class="ee-footer__list">
-                    @foreach (range(1, 6) as $n)
-                        <li><a href="{{ url('/inlocuire-parbriz-bucuresti/sector-'.$n) }}">Înlocuire parbriz Sector {{ $n }}</a></li>
+                    <li><a href="{{ url('/inlocuire-parbriz-bucuresti') }}">Parbrize București</a></li>
+                    @foreach ($footerCities as $c)
+                        <li><a href="{{ url($c['url']) }}">Parbrize {{ $c['label'] }}</a></li>
                     @endforeach
-                    <li><a href="{{ url('/inlocuire-parbriz-ilfov') }}">Înlocuire parbriz Ilfov</a></li>
+                    <li><a href="{{ url('/#orase') }}">Toate orașele →</a></li>
                 </ul>
             </div>
             <div class="col-md-6 col-lg-3">
                 <h2 class="ee-footer__title">Informații</h2>
                 <ul class="ee-footer__list">
+                    <li><a href="{{ route('blog.index') }}">Blog</a></li>
                     <li><a href="{{ url('/despre-noi') }}">Despre noi</a></li>
                     <li><a href="{{ route('contact') }}">Contact</a></li>
                     <li><a href="{{ route('lead.create') }}">Solicită ofertă</a></li>

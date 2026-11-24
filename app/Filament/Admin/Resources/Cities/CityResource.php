@@ -66,7 +66,9 @@ class CityResource extends Resource
                     Toggle::make('is_published')->label('Pagină publicată pe site')->default(false),
                 ]),
                 Tab::make('SEO')->columns(2)->schema([
-                    TextInput::make('primary_keyword')->label('Cuvânt-cheie principal')->maxLength(120),
+                    TextInput::make('primary_keyword')->label('Cuvânt-cheie principal')->maxLength(120)
+                        ->live(onBlur: true)
+                        ->helperText(fn (\Filament\Schemas\Components\Utilities\Get $get, ?City $record) => \App\Support\SeoOverlap::warning((string) $get('primary_keyword'), 'city', $record?->id)),
                     TextInput::make('search_volume')->label('Volum lunar (DataForSEO)')->numeric(),
                     TagsInput::make('secondary_keywords')->label('Cuvinte secundare')->columnSpanFull(),
                     TextInput::make('seo_title')->label('Titlu SEO')->maxLength(190)->helperText('Recomandat: 50–60 de caractere.')->columnSpanFull(),

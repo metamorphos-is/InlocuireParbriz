@@ -84,6 +84,7 @@ return [
 
     'simple' => [
         ['label' => 'Prețuri', 'icon' => 'tag', 'url' => '/pret-inlocuire-parbriz'],
+        ['label' => 'Blog', 'icon' => 'book', 'url' => '/blog'],
         ['label' => 'Despre noi', 'icon' => 'info', 'url' => '/despre-noi'],
         ['label' => 'Contact', 'icon' => 'mail', 'url' => '/contact'],
     ],

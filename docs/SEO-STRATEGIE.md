@@ -62,4 +62,14 @@ Sub 600/lună (Botoșani, Focșani, Satu Mare etc.): deocamdată fără pagină 
 | `/inlocuire-luneta-si-geamuri-laterale` | lunetă auto | înlocuire lunetă, geamuri auto |
 | `/parbriz-pe-casco` | parbriz CASCO | înlocuire parbriz CASCO |
 | `/parbrize-flote-firme` | parbrize flote | parbrize firme |
-| blog (etapa următoare) | parbriz fisurat, ciobitură parbriz, kit reparație parbriz (informațional) | — |
+| `/blog/ciobitura-parbriz-ce-faci` | ciobitură parbriz (590) | ciobitură în parbriz, piatră în parbriz |
+| `/blog/parbriz-fisurat-reparatie-sau-inlocuire` | parbriz fisurat | fisură parbriz |
+| `/blog/kit-reparatie-parbriz-merita` | kit reparație parbriz (1.000) | kit reparație ciobitură |
+| `/blog/parbriz-original-oem-aftermarket` | parbriz original sau aftermarket | parbriz OEM, producători parbrize |
+| `/blog/cat-dureaza-schimbarea-parbrizului` | cât durează schimbarea parbrizului | timp uscare adeziv |
+| `/blog/calibrare-adas-dupa-schimbarea-parbrizului` | calibrare ADAS după schimbare parbriz | — |
+
+Harta paginilor fixe e în `config/seo-map.php`; orașele și articolele își țin cuvintele în baza de date. **Admin → SEO & Conținut → Verificare SEO** arată orice cuvânt țintit de două pagini, titlurile/descrierile cu probleme și articolele fără link intern. Formularele de oraș și articol avertizează direct la câmpul „Cuvânt-cheie principal”.
+
+### Calendar editorial (următoarele articole)
+Fiecare articol trimite spre o pagină de serviciu și nu concurează cu ea: parbriz spart pe drum — ce faci; parbriz încălzit — cum îl recunoști; senzor de ploaie după schimbare; ITP cu parbriz fisurat; parbriz aburit/infiltrații după montaj; lunetă spartă — ce faci până la montaj.

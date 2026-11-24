@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CityPageController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
@@ -37,6 +38,8 @@ Route::get('/inlocuire-parbriz-{city}', [CityPageController::class, 'show'])
     ->name('city.show');
 
 Route::view('/servicii', 'pages.services')->name('services');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->where('slug', '[a-z0-9-]+')->name('blog.show');
 
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::get('/politica-de-confidentialitate', [ContactController::class, 'privacy'])->name('privacy');
