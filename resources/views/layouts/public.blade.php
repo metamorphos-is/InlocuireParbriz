@@ -21,8 +21,8 @@
     <link rel="icon" type="image/svg+xml" href="{{ asset('assets/img/favicon.svg') }}">
     <link rel="preload" href="{{ asset('assets/fonts/manrope-latin-800.woff2') }}" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/inlocuireparbriz.css') }}?v=20261124e">
-    <link rel="stylesheet" href="{{ asset('assets/css/menu.css') }}?v=20261124e">
+    <link rel="stylesheet" href="{{ asset('assets/css/inlocuireparbriz.css') }}?v={{ @filemtime(public_path('assets/css/inlocuireparbriz.css')) }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/menu.css') }}?v={{ @filemtime(public_path('assets/css/menu.css')) }}">
 
     @include('partials.schema-localbusiness')
     @stack('head')
@@ -43,7 +43,7 @@
         <a href="{{ route('lead.create') }}" class="ee-btn ee-btn--amber ee-btn--block">Solicită ofertă @include('partials.icon', ['name' => 'arrow', 'size' => 18])</a>
     </div>
 
-    <script src="{{ asset('assets/js/inlocuireparbriz.js') }}?v=20261124e" defer></script>
+    <script src="{{ asset('assets/js/inlocuireparbriz.js') }}?v={{ @filemtime(public_path('assets/js/inlocuireparbriz.js')) }}" defer></script>
     @stack('scripts')
 </body>
 </html>
