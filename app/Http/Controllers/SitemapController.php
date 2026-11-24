@@ -16,6 +16,10 @@ class SitemapController extends Controller
             $urls[] = ['loc' => url('/'.$slug), 'changefreq' => 'weekly', 'priority' => '0.8'];
         }
 
+        foreach (\App\Models\City::query()->withPublicPage()->orderBy('sort_order')->get() as $city) {
+            $urls[] = ['loc' => $city->url(), 'changefreq' => 'weekly', 'priority' => '0.8'];
+        }
+
         foreach (range(1, 6) as $n) {
             $urls[] = [
                 'loc' => url("/inlocuire-parbriz-bucuresti/sector-{$n}"),

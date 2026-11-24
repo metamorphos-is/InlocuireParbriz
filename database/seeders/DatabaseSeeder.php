@@ -36,6 +36,9 @@ class DatabaseSeeder extends Seeder
                 'name' => 'București',
                 'county' => 'București',
                 'is_active' => true,
+                'region' => 'bucuresti-ilfov',
+                'coverage' => 'active',
+                'sort_order' => 1,
             ]
         );
 

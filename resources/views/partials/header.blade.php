@@ -4,7 +4,8 @@
     $path = '/'.ltrim(request()->path(), '/');
     $isActive = fn (string $url) => $url !== '/' && (rtrim($path, '/') === rtrim(parse_url($url, PHP_URL_PATH), '/') || str_starts_with($path, rtrim(parse_url($url, PHP_URL_PATH), '/').'/'));
     $servicesActive = collect($nav['servicii']['groups'])->flatMap(fn ($g) => $g['items'])->contains(fn ($i) => $isActive($i['url'])) || $isActive('/servicii');
-    $locationsActive = collect($nav['locatii']['regions'])->contains(fn ($r) => $isActive($r['main']['url']));
+    $regions = \App\Support\Navigation::locationRegions();
+    $locationsActive = collect($regions)->contains(fn ($r) => $isActive($r['main']['url']) || collect($r['items'])->contains(fn ($i) => $isActive($i['url'])));
 @endphp
 <header class="ip-header" data-ip-header>
     <div class="container ip-header__bar">
@@ -69,7 +70,7 @@
                     <div class="ip-mega ip-mega--split" id="ip-mega-locatii" data-ip-drop-panel>
                         <div class="ip-mega__inner ip-loc" data-ip-tabs>
                             <ul class="ip-loc__tabs" role="tablist">
-                                @foreach ($nav['locatii']['regions'] as $i => $region)
+                                @foreach ($regions as $i => $region)
                                     <li>
                                         <button type="button" role="tab" id="ip-loc-tab-{{ $region['key'] }}" aria-controls="ip-loc-panel-{{ $region['key'] }}" aria-selected="{{ $i === 0 ? 'true' : 'false' }}" @class(['ip-loc__tab', 'is-active' => $i === 0]) data-ip-tab="{{ $region['key'] }}">
                                             @include('partials.icon', ['name' => $region['icon'], 'size' => 20])
@@ -80,7 +81,7 @@
                                 @endforeach
                             </ul>
                             <div class="ip-loc__panels">
-                                @foreach ($nav['locatii']['regions'] as $i => $region)
+                                @foreach ($regions as $i => $region)
                                     <div class="ip-loc__panel" role="tabpanel" id="ip-loc-panel-{{ $region['key'] }}" aria-labelledby="ip-loc-tab-{{ $region['key'] }}" data-ip-panel="{{ $region['key'] }}" @if ($i !== 0) hidden @endif>
                                         <div class="ip-loc__head">
                                             <p class="ip-mega__title">{{ $region['title'] }}</p>
@@ -92,7 +93,7 @@
                                                     <li>
                                                         <a href="{{ url($item['url']) }}" @class(['ip-mlink', 'ip-mlink--compact', 'is-active' => $isActive($item['url'])])>
                                                             <span class="ip-mlink__icon">@include('partials.icon', ['name' => 'pin', 'size' => 18])</span>
-                                                            <span><strong>Înlocuire parbriz {{ $item['label'] }}</strong><small>{{ $item['hint'] }}</small></span>
+                                                            <span><strong>{{ $item['title'] ?? 'Înlocuire parbriz '.$item['label'] }}</strong><small>{{ $item['hint'] }}</small></span>
                                                         </a>
                                                     </li>
                                                 @endforeach

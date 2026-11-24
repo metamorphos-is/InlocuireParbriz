@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CityPageController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeadController;
@@ -29,6 +30,11 @@ Route::get('/{slug}', [SeoPageController::class, 'show'])
 Route::get('/inlocuire-parbriz-bucuresti/sector-{n}', [SeoPageController::class, 'sector'])
     ->whereNumber('n')
     ->name('seo.sector');
+
+// Pagini de oraș (din admin → Orașe). București și Ilfov au paginile lor dedicate, definite mai sus.
+Route::get('/inlocuire-parbriz-{city}', [CityPageController::class, 'show'])
+    ->where('city', '(?!bucuresti$|ilfov$|la-domiciliu$)[a-z0-9-]+')
+    ->name('city.show');
 
 Route::view('/servicii', 'pages.services')->name('services');
 

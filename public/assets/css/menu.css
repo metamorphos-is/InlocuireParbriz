@@ -175,3 +175,31 @@
 .ip-service-card__more { margin-top: auto; display: inline-flex; align-items: center; gap: .3rem; color: var(--ip-blue); font-weight: 700; }
 .ip-help-box { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; margin-top: 2.5rem; padding: 1.5rem; border-radius: var(--ip-radius); background: var(--ip-soft); border: 1px solid var(--ip-line); }
 @media (max-width: 767.98px) { .ip-help-box { flex-direction: column; align-items: flex-start; } }
+
+/* ---- Hero pagini noi (oraș etc.) ---- */
+.ip-btn--lg { min-height: 52px; padding: .8rem 1.4rem; font-size: 1.02rem; }
+.ip-hero { padding: 2rem 0 2.75rem; background: linear-gradient(180deg, #F7F9FC 0%, #fff 100%); border-bottom: 1px solid var(--ip-line); }
+.ip-crumbs { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.25rem; color: var(--ip-muted); font-size: .9rem; }
+.ip-crumbs a { color: var(--ip-muted); text-decoration: none; }
+.ip-crumbs a:hover { color: var(--ip-blue); text-decoration: underline; }
+.ip-crumbs [aria-current] { color: var(--ip-ink); font-weight: 600; }
+.ip-hero__grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 2.5rem; align-items: center; }
+.ip-kicker { display: inline-flex; align-items: center; gap: .35rem; margin: 0 0 .75rem; padding: .3rem .7rem; border-radius: 999px; background: var(--ip-tint); color: var(--ip-blue); font-size: .85rem; font-weight: 700; }
+.ip-hero__title { margin: 0 0 1rem; color: var(--ip-ink); font-family: var(--ee-font-head, sans-serif); font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -.02em; }
+.ip-hero__lead { max-width: 62ch; margin: 0 0 1.5rem; color: var(--ip-ink-2); font-size: 1.12rem; line-height: 1.6; }
+.ip-hero__actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.ip-coverage { display: flex; gap: .9rem; padding: 1.25rem; border: 1px solid var(--ip-line); border-radius: 16px; background: #fff; box-shadow: 0 12px 28px -18px rgba(16, 24, 39, .35); }
+.ip-coverage__icon { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: #FFF4EC; color: var(--ip-cta); }
+.ip-coverage.is-active .ip-coverage__icon { background: #E8F7EE; color: #1E8E4E; }
+.ip-coverage__title { margin: 0 0 .25rem; color: var(--ip-ink); font-weight: 800; }
+.ip-coverage__text { margin: 0; color: var(--ip-muted); font-size: .95rem; line-height: 1.5; }
+.ip-chips { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0 0; padding: 0; }
+.ip-chips li { padding: .35rem .75rem; border: 1px solid var(--ip-line); border-radius: 999px; background: #fff; color: var(--ip-ink-2); font-size: .9rem; }
+.ip-checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; color: var(--ip-ink-2); font-size: .92rem; }
+.ip-checklist li { display: flex; align-items: center; gap: .45rem; }
+.ip-checklist .ee-icon { color: #1E8E4E; }
+.ip-city-links { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .5rem; margin: 0; padding: 0; }
+.ip-city-links a { display: flex; align-items: center; gap: .45rem; padding: .7rem .9rem; border: 1px solid var(--ip-line); border-radius: 10px; background: #fff; color: var(--ip-ink); font-weight: 600; text-decoration: none; }
+.ip-city-links a:hover { border-color: var(--ip-blue); color: var(--ip-blue); }
+.ip-city-links .ee-icon { color: var(--ip-cta); }
+@media (max-width: 991.98px) { .ip-hero__grid { grid-template-columns: 1fr; gap: 1.5rem; } }
