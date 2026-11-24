@@ -14,7 +14,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Html;
 use Filament\Schemas\Schema;
+use App\Services\Notifications\LeadNotifier;
+use Illuminate\Support\HtmlString;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -56,15 +59,30 @@ class NotificationTemplateResource extends Resource
                 TextInput::make('subject')
                     ->label('Subiect (doar email)')
                     ->maxLength(255)
+                    ->live(debounce: 600)
                     ->visible(fn ($get) => $get('channel') === 'email')
                     ->columnSpanFull(),
                 Textarea::make('body')
-                    ->label('Conținut')
-                    ->helperText('Variabile: {reference}, {customer_name}, {phone}, {category}, {description}')
+                    ->label(fn ($get) => $get('channel') === 'email' ? 'Textul de introducere din email' : 'Textul SMS-ului')
+                    ->helperText(fn ($get) => $get('channel') === 'email'
+                        ? 'Scrii doar textul de la început. Designul (logo, culori), tabelul cu detaliile cererii și butoanele (Deschide cererea, Sună clientul, WhatsApp) se adaugă automat — vezi previzualizarea de mai jos. Variabile: {reference}, {customer_name}, {phone}, {vehicle_brand}, {vehicle_model}, {vehicle_year}, {city}, {provider_name}.'
+                        : 'Variabile: {reference}, {customer_name}, {phone}, {category}. Un SMS are 160 de caractere (fără diacritice) — textele mai lungi se trimit în mai multe bucăți.')
                     ->required()
-                    ->rows(6)
+                    ->rows(5)
+                    ->live(debounce: 600)
                     ->columnSpanFull(),
                 Toggle::make('is_active')->label('Activ')->default(true),
+                Html::make(function ($get) {
+                    if ($get('channel') !== 'email') {
+                        return null;
+                    }
+                    $html = app(LeadNotifier::class)->previewHtml((string) $get('key'), (string) $get('subject'), (string) $get('body'));
+
+                    return new HtmlString(
+                        '<div style="margin-top:.5rem"><p style="font-size:.85rem;font-weight:600;margin:0 0 .5rem">Previzualizare (date de exemplu)</p>'
+                        .'<iframe title="Previzualizare email" sandbox="" style="width:100%;height:760px;border:1px solid #e5e7eb;border-radius:12px;background:#EEF1F6" srcdoc="'.e($html).'"></iframe></div>'
+                    );
+                })->columnSpanFull(),
             ]);
     }
 
@@ -82,7 +100,7 @@ class NotificationTemplateResource extends Resource
                 SelectFilter::make('channel')->label('Canal')->options(['email' => 'Email', 'sms' => 'SMS']),
             ])
             ->recordActions([
-                EditAction::make()->label('Editează'),
+                EditAction::make()->label('Editează')->modalWidth('5xl'),
                 DeleteAction::make()->label('Șterge'),
             ])
             ->toolbarActions([

@@ -26,17 +26,7 @@ class LeadNotifier
         }
 
         if ($email) {
-            $this->sendEmail('lead.provider_email', $email, $vars, $lead->id, [
-                'kicker' => 'Cerere alocată',
-                'title' => 'Ai o cerere nouă de la '.$this->brand(),
-                'reference' => $lead->reference,
-                'rows' => $this->leadRows($lead, true),
-                'buttons' => array_values(array_filter([
-                    ['Vezi cererea în portal', $this->url('/portal/leads/'.$lead->id), true],
-                    $this->telButton($lead->phone, 'Sună clientul'),
-                ])),
-                'note' => 'Te rugăm să confirmi în portal dacă preiei lucrarea și să contactezi clientul cât mai curând.',
-            ]);
+            $this->sendEmail('lead.provider_email', $email, $vars, $lead->id, $this->providerLayout($lead));
         }
     }
 
@@ -47,33 +37,14 @@ class LeadNotifier
     /** Email de test din admin (Setări site): un exemplu de „cerere nouă”, cu date fictive. Întoarce adresele la care a plecat. */
     public function sendTestEmail(): array
     {
-        $lead = new Lead([
-            'reference' => 'TEST-'.now()->format('His'),
-            'customer_name' => 'Ion Popescu (exemplu)',
-            'phone' => '0722 000 000',
-            'email' => 'client@example.com',
-            'vehicle_brand' => 'Dacia', 'vehicle_model' => 'Duster', 'vehicle_year' => '2021',
-            'glass_type' => 'parbriz', 'glass_features' => ['senzor_ploaie', 'camera_adas'],
-            'address_text' => 'Str. Exemplu 1, Brașov', 'service_location_type' => 'domiciliu',
-            'description' => 'Fisură de aproximativ 20 cm, pornită de la o ciobitură.',
-            'urgency' => true,
-        ]);
-        $lead->created_at = now();
-
+        $lead = $this->sampleLead();
         $sent = [];
         foreach (self::adminRecipients() as $to) {
-            if ($this->sendEmail('lead.admin_email', $to, $this->vars($lead), null, [
+            $layout = array_merge($this->adminLayout($lead), [
                 'kicker' => 'Email de test',
-                'title' => 'Așa arată notificarea pentru o cerere nouă',
-                'reference' => $lead->reference,
-                'rows' => $this->leadRows($lead, true),
-                'buttons' => array_values(array_filter([
-                    ['Deschide adminul', $this->url('/admin/leads'), true],
-                    $this->telButton($lead->phone, 'Sună clientul'),
-                    $this->whatsappButton($lead->phone),
-                ])),
                 'note' => 'Acesta este un mesaj de test trimis din admin → Setări site. Datele sunt fictive.',
-            ])) {
+            ]);
+            if ($this->sendEmail('lead.admin_email', $to, $this->vars($lead), null, $layout)) {
                 $sent[] = $to;
             }
         }
@@ -93,22 +64,8 @@ class LeadNotifier
 
     public function notifyAdminNewLead(Lead $lead): void
     {
-        $buttons = array_values(array_filter([
-            ['Deschide cererea în admin', $this->url('/admin/leads/'.$lead->id.'/edit'), true],
-            $this->telButton($lead->phone, 'Sună clientul'),
-            $this->whatsappButton($lead->phone),
-            $lead->email ? ['Scrie clientului', 'mailto:'.$lead->email.'?subject='.rawurlencode('Cererea '.$lead->reference.' – '.$this->brand()), false] : null,
-        ]));
-
         foreach (self::adminRecipients() as $to) {
-            $this->sendEmail('lead.admin_email', $to, $this->vars($lead), $lead->id, [
-                'kicker' => $lead->urgency ? 'Cerere nouă · urgentă' : 'Cerere nouă',
-                'title' => 'Cerere nouă de la '.($lead->customer_name ?: 'un client'),
-                'reference' => $lead->reference,
-                'rows' => $this->leadRows($lead, true),
-                'buttons' => $buttons,
-                'note' => 'Primită '.optional($lead->created_at)->timezone('Europe/Bucharest')?->format('d.m.Y, H:i').($lead->landing_path ? ' · din pagina '.$lead->landing_path : ''),
-            ]);
+            $this->sendEmail('lead.admin_email', $to, $this->vars($lead), $lead->id, $this->adminLayout($lead));
         }
     }
 
@@ -119,19 +76,7 @@ class LeadNotifier
         }
 
         if ($lead->email) {
-            $phone = \App\Support\Company::display()['phone'] ?? '';
-            $this->sendEmail('lead.customer_email', $lead->email, $this->vars($lead), $lead->id, [
-                'kicker' => 'Cerere primită',
-                'title' => 'Mulțumim, '.(trim(strtok((string) $lead->customer_name, ' ')) ?: 'am primit cererea').'!',
-                'reference' => $lead->reference,
-                'rows' => $this->leadRows($lead, false),
-                'buttons' => array_values(array_filter([
-                    ['Vezi cum funcționează', $this->url('/#cum-functioneaza'), true],
-                    $phone ? $this->telButton($phone, 'Sună-ne') : null,
-                    ['Ghiduri despre parbrize', $this->url('/blog'), false],
-                ])),
-                'note' => 'Ce urmează: verificăm sticla potrivită mașinii tale și îți confirmăm disponibilitatea unui atelier partener din zona ta, apoi primești oferta. Nu ai nicio obligație să o accepți.',
-            ]);
+            $this->sendEmail('lead.customer_email', $lead->email, $this->vars($lead), $lead->id, $this->customerLayout($lead));
         }
     }
 
@@ -218,6 +163,97 @@ class LeadNotifier
 
             return false;
         }
+    }
+
+    /** @return array<string,mixed> */
+    protected function adminLayout(Lead $lead): array
+    {
+        return [
+            'kicker' => $lead->urgency ? 'Cerere nouă · urgentă' : 'Cerere nouă',
+            'title' => 'Cerere nouă de la '.($lead->customer_name ?: 'un client'),
+            'reference' => $lead->reference,
+            'rows' => $this->leadRows($lead, true),
+            'buttons' => array_values(array_filter([
+                ['Deschide cererea în admin', $this->url('/admin/leads/'.$lead->id.'/edit'), true],
+                $this->telButton($lead->phone, 'Sună clientul'),
+                $this->whatsappButton($lead->phone),
+                $lead->email ? ['Scrie clientului', 'mailto:'.$lead->email.'?subject='.rawurlencode('Cererea '.$lead->reference.' – '.$this->brand()), false] : null,
+            ])),
+            'note' => 'Primită '.optional($lead->created_at)->timezone('Europe/Bucharest')?->format('d.m.Y, H:i').($lead->landing_path ? ' · din pagina '.$lead->landing_path : ''),
+        ];
+    }
+
+    /** @return array<string,mixed> */
+    protected function providerLayout(Lead $lead): array
+    {
+        return [
+            'kicker' => 'Cerere alocată',
+            'title' => 'Ai o cerere nouă de la '.$this->brand(),
+            'reference' => $lead->reference,
+            'rows' => $this->leadRows($lead, true),
+            'buttons' => array_values(array_filter([
+                ['Vezi cererea în portal', $this->url('/portal/leads/'.$lead->id), true],
+                $this->telButton($lead->phone, 'Sună clientul'),
+            ])),
+            'note' => 'Te rugăm să confirmi în portal dacă preiei lucrarea și să contactezi clientul cât mai curând.',
+        ];
+    }
+
+    /** @return array<string,mixed> */
+    protected function customerLayout(Lead $lead): array
+    {
+        $phone = \App\Support\Company::display()['phone'] ?? '';
+
+        return [
+            'kicker' => 'Cerere primită',
+            'title' => 'Mulțumim, '.(trim(strtok((string) $lead->customer_name, ' ')) ?: 'am primit cererea').'!',
+            'reference' => $lead->reference,
+            'rows' => $this->leadRows($lead, false),
+            'buttons' => array_values(array_filter([
+                ['Vezi cum funcționează', $this->url('/#cum-functioneaza'), true],
+                $phone ? $this->telButton($phone, 'Sună-ne') : null,
+                ['Ghiduri despre parbriz', $this->url('/blog'), false],
+            ])),
+            'note' => 'Ce urmează: verificăm sticla potrivită mașinii tale și îți confirmăm disponibilitatea unui atelier partener din zona ta, apoi primești oferta. Nu ai nicio obligație să o accepți.',
+        ];
+    }
+
+    protected function sampleLead(): Lead
+    {
+        $lead = new Lead([
+            'reference' => 'IP-'.now()->format('ymd').'-0042',
+            'customer_name' => 'Ion Popescu',
+            'phone' => '0722 000 000',
+            'email' => 'client@example.com',
+            'vehicle_brand' => 'Dacia', 'vehicle_model' => 'Duster', 'vehicle_year' => '2021',
+            'glass_type' => 'parbriz', 'glass_features' => ['senzor_ploaie', 'camera_adas'],
+            'address_text' => 'Str. Exemplu 1, Brașov', 'service_location_type' => 'domiciliu',
+            'description' => 'Fisură de aproximativ 20 cm, pornită de la o ciobitură.',
+            'urgency' => true,
+        ]);
+        $lead->id = 42;
+        $lead->created_at = now();
+
+        return $lead;
+    }
+
+    /** HTML-ul complet al emailului, cu date de exemplu — pentru previzualizarea din admin. */
+    public function previewHtml(string $key, ?string $subject, ?string $body): string
+    {
+        $lead = $this->sampleLead();
+        $vars = $this->vars($lead);
+        $vars['provider_name'] = 'Atelier Exemplu';
+        $layout = match ($key) {
+            'lead.admin_email' => $this->adminLayout($lead),
+            'lead.provider_email' => $this->providerLayout($lead),
+            'lead.customer_email' => $this->customerLayout($lead),
+            default => ['title' => 'Notificare', 'rows' => $this->leadRows($lead, true), 'buttons' => []],
+        };
+
+        return view('emails.notification', array_merge(['preheader' => '', 'note' => null, 'reference' => $lead->reference], $layout, [
+            'intro' => $this->render((string) $body, $vars),
+            'preheader' => $this->render((string) $subject, $vars),
+        ]))->render();
     }
 
     protected function brand(): string
