@@ -29,6 +29,7 @@ Proiectul e lucrat de mai mulți asistenți AI. Ca să nu ne călcăm pe picioar
 - Deploy-ul raportează `is_success: false` cu „You are running 8.2.36”: Composer-ul Hostinger rulează în CLI pe PHP 8.2, iar scripturile `post-autoload-dump` (artisan) cad. **Codul și `vendor/` se actualizează totuși** (site-ul rulează pe PHP 8.3). Verifică fișierele, nu te baza pe acel flag. Comenzile artisan în cron folosesc explicit `/opt/alt/php83/usr/bin/php` și calea completă către `artisan`, **fără `cd` și fără `&&`** (Hostinger escapează caracterele speciale și comanda nu mai rulează; max 255 caractere). Cron-ul activ: `/opt/alt/php83/usr/bin/php /home/u422988064/domains/inlocuireparbriz.ro/public_html/site/artisan schedule:run`.
 - **Migrările** rulează automat după deploy prin `app:post-deploy` (scheduler, cron Hostinger `* * * * * php artisan schedule:run`), sau manual din admin → Sistem → **Întreținere** → „Rulează migrările acum”. Migrările trebuie să fie **doar aditive** (fără drop/rename pe coloane cu date) — altfel discută întâi cu proprietarul.
 - Tot ce rulează periodic se definește în `routes/console.php` (versionat), nu direct în cron-ul Hostinger.
+- Pe Hostinger `proc_open`, `exec`, `popen`, `shell_exec` sunt **dezactivate**: în scheduler folosește doar `Schedule::call(fn () => Artisan::call(...))`, niciodată `Schedule::command()` sau `runInBackground()`. Nici `Process`/`Symfony Process` în cod.
 
 ## 3. Secrete
 - Nu pune niciodată în Git: `.env`, `bootstrap/production-settings.php`, `secrets/`, parole, chei API, token-uri.
