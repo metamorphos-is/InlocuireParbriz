@@ -6,7 +6,16 @@ Proiectul e lucrat de mai mulți asistenți AI. Ca să nu ne călcăm pe picioar
 - Repo: https://github.com/metamorphos-is/InlocuireParbriz, ramura `main`.
 - Orice modificare de cod se face **în repo** (commit + push pe `main`). Nu edita fișiere direct pe server.
 - Înainte să începi lucrul: `git pull`. După ce termini: commit cu mesaj clar (în română) + `git push`.
-- Pe calculatorul proprietarului, copia de lucru e `E:\CursorProjects\Site-uri\InlocuireParbriz\app\` (un clone al repo-ului). Folderele `deploy-git/`, `deploy-laravel/` și arhivele zip sunt **vechi** — nu le mai folosi.
+- Pe calculatorul proprietarului, copia de lucru e `E:\CursorProjects\Site-uri\InlocuireParbriz\app\`. Folderele `deploy-git/`, `deploy-laravel/` și arhivele zip sunt **vechi** — nu le mai folosi.
+- Dacă `app\` nu e încă legat de Git (nu are folderul `.git`), leagă-l o singură dată, din `app\`:
+  ```sh
+  git init -b main
+  git remote add origin https://github.com/metamorphos-is/InlocuireParbriz.git
+  git fetch origin
+  git reset --mixed origin/main   # păstrează fișierele locale (.env, vendor), aliniază istoricul
+  git status                      # verifică diferențele înainte de orice commit
+  ```
+- Claude lucrează din cloud: face commit + push direct în GitHub și copiază aceleași fișiere în `app\`. Dacă vezi fișiere modificate pe care nu le-ai atins tu, rulează `git status` / `git pull` înainte să suprascrii ceva.
 
 ## 2. Publicarea pe server (Hostinger)
 - Cont `u422988064`, domeniul `inlocuireparbriz.ro`.
@@ -14,6 +23,10 @@ Proiectul e lucrat de mai mulți asistenți AI. Ca să nu ne călcăm pe picioar
 - Publicarea se face cu operația Hostinger **`hosting_git_deploy-website-repository`** (repo-ul de mai sus, ramura `main`, directorul `site`). Ea face `git pull` + `composer install` și **păstrează** `.env` și `vendor/`.
 - **NU folosi `hosting_deploy`** și nici încărcarea de arhive: suprascriu tot site-ul și șterg `.env` și `vendor/`.
 - Pachetele PHP se instalează **doar** prin `composer install` (Packagist). Nu urca `vendor/` din alte surse (catbox, tmpfiles etc.).
+- Hostinger **nu rulează scripturile composer** (`post-autoload-dump`). De aceea asset-urile Filament (`public/js|css|fonts/filament`) sunt ținute în Git. După un upgrade Filament: `php artisan filament:assets` local, apoi commit.
+- `composer.json` fixează platforma la PHP 8.3 (`config.platform`), ca pe server. Nu o schimba fără să schimbi și versiunea PHP din hPanel.
+- Operația de deploy poate întoarce HTTP 500 (timeout) deși reușește pe server: așteaptă ~1 minut și verifică fișierele în `site/` înainte s-o repeți.
+- **Migrările** (`php artisan migrate`) nu rulează automat la deploy. Încă nu există un mecanism sigur pentru ele; o migrare nouă trebuie discutată cu proprietarul înainte.
 
 ## 3. Secrete
 - Nu pune niciodată în Git: `.env`, `bootstrap/production-settings.php`, `secrets/`, parole, chei API, token-uri.
