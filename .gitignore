@@ -19,10 +19,8 @@ env.server
 /database/*.sqlite
 /bootstrap/cache/*.php
 
-# Asset-uri Filament generate de `php artisan filament:upgrade` (rulează la composer install)
-/public/js/filament
-/public/css/filament
-/public/fonts/filament
+# Asset-urile Filament (public/js|css|fonts/filament) SUNT în Git: hosting-ul nu rulează
+# scripturile composer, deci nu se generează singure. După upgrade Filament: php artisan filament:assets
 
 # Scripturi de instalare one-shot — nu se mai urcă niciodată
 /public/setup-once.php
