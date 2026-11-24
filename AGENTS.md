@@ -50,7 +50,8 @@ Proiectul e lucrat de mai mulți asistenți AI. Ca să nu ne călcăm pe picioar
 - Prezentarea publică (decizia proprietarului, 24.11.2026): onestă și discretă — „Primești oferta și montajul prin atelierele partenere verificate din orașul tău”. Nu folosi cuvântul „marketplace” și nu detalia alocarea internă; nu nega existența partenerilor.
 - Orașe fără acoperire confirmată: „Trimite cererea, îți confirmăm disponibilitatea în zona ta” — nu promite montaj acolo.
 - Datele firmei se editează din admin (Setări site → Date firmă, `App\Support\Company`). Cât timp „Date de test” e activ, nu intră în Schema.org.
-- Site-ul e `noindex` până când proprietarul spune „lansare”.
+- **Site-ul e lansat și indexabil din 24.11.2026** (migrarea `launch_indexing`). Comutatorul rămâne în admin → Setări site → SEO. Canonical: mereu `https://inlocuireparbriz.ro/...` (`App\Support\Seo::canonical()`); `www` și `/site/public/...` fac 301 (vezi `public/.htaccess`).
+- Cât timp „Date de test” e activ, telefonul și datele juridice de test NU apar pe site (`Company::display()`).
 - Starea proiectului și deciziile: vezi `docs/` din repo.
 
 ## 7. Scriere (decizia proprietarului, 24.11.2026)

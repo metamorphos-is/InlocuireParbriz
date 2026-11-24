@@ -3,11 +3,14 @@
 @foreach ($urls as $u)
     <url>
         <loc>{{ $u['loc'] }}</loc>
+@if ($u['lastmod'])
+        <lastmod>{{ $u['lastmod'] }}</lastmod>
+@endif
         <changefreq>{{ $u['changefreq'] }}</changefreq>
         <priority>{{ $u['priority'] }}</priority>
 @foreach (array_unique($u['images'] ?? []) as $slug)
 @if ($img = \App\Support\Img::get($slug))
-        <image:image><image:loc>{{ $img['src'] }}</image:loc></image:image>
+        <image:image><image:loc>{{ rtrim(config('inlocuireparbriz.canonical_url'), '/').'/assets/img/foto/'.$slug.'-1280.webp' }}</image:loc></image:image>
 @endif
 @endforeach
     </url>

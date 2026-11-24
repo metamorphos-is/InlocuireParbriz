@@ -1,5 +1,5 @@
 @php
-    $company = \App\Support\Company::all();
+    $company = \App\Support\Company::display();
     $footerCities = collect(\App\Support\Navigation::locationRegions())
         ->reject(fn ($r) => in_array($r['key'] ?? '', ['bucuresti', 'ilfov', 'alte'], true))
         ->flatMap(fn ($r) => $r['items'] ?? [])->take(9);

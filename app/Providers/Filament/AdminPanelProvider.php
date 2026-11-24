@@ -54,6 +54,7 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
             ])
             ->middleware([
+                \App\Http\Middleware\ForceNoIndex::class,
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,

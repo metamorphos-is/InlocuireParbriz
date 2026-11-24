@@ -60,10 +60,10 @@ class LeadFormTest extends TestCase
         $this->assertTrue(NotificationLog::query()->where('template_key', 'lead.customer_sms')->exists());
     }
 
-    public function test_company_test_data_is_shown_but_not_in_schema(): void
+    public function test_company_test_data_is_hidden_and_not_in_schema(): void
     {
         $this->seed();
-        $html = $this->get('/contact')->assertOk()->assertSee('0700 000 000')->getContent();
+        $html = $this->get('/contact')->assertOk()->assertDontSee('0700 000 000')->getContent();
         preg_match('#<script type="application/ld\+json">(.*?)</script>#s', $html, $m);
         $this->assertStringNotContainsString('telephone', $m[1] ?? '');
 
@@ -72,5 +72,6 @@ class LeadFormTest extends TestCase
         preg_match('#<script type="application/ld\+json">(.*?)</script>#s', $html, $m);
         $this->assertStringContainsString('+40744555666', $m[1] ?? '');
         $this->assertStringContainsString('Real SRL', $m[1] ?? '');
+        $this->assertStringContainsString('0744 555 666', $html);
     }
 }

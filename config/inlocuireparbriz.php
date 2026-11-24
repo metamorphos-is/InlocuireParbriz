@@ -17,6 +17,8 @@ return [
 
     'brand' => 'inlocuireparbriz.ro',
     'domain' => 'inlocuireparbriz.ro',
+    // Adresa canonică folosită în <link rel="canonical">, og:url și sitemap (fără www, https).
+    'canonical_url' => env('CANONICAL_URL', 'https://inlocuireparbriz.ro'),
     'team' => 'Echipa inlocuireparbriz.ro',
     'city' => 'București',
     'city_slug' => 'bucuresti',

@@ -5,6 +5,18 @@
 
     RewriteEngine On
 
+    # SEO: o singură adresă canonică (https://inlocuireparbriz.ro). HTTP→HTTPS e activ din hPanel.
+    # 1) Acces direct prin calea internă /site/public/... → URL-ul curat
+    RewriteCond %{THE_REQUEST} \s/+site/public/?(\S*)\s [NC]
+    RewriteRule ^ https://inlocuireparbriz.ro/%1 [R=301,L,NE]
+    # 2) www → fără www
+    RewriteCond %{HTTP_HOST} ^www\.inlocuireparbriz\.ro$ [NC]
+    RewriteCond %{THE_REQUEST} \s(\S+)\s
+    RewriteRule ^ https://inlocuireparbriz.ro%1 [R=301,L,NE]
+    # 3) /index.php în URL → fără
+    RewriteCond %{THE_REQUEST} \s/+index\.php[\s?/]
+    RewriteRule ^ https://inlocuireparbriz.ro/ [R=301,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

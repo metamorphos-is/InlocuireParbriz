@@ -1,16 +1,17 @@
 {{-- Schema.org: o singură organizație (@id stabil). Fără rating, recenzii, program sau adrese inventate.
      Datele de contact intră în schema DOAR când în admin „Date de test” e dezactivat. --}}
 @php
-    $company = \App\Support\Company::all();
+    $company = \App\Support\Company::display();
     $real = ! \App\Support\Company::isTest();
-    $orgId = url('/').'#organization';
+    $base = rtrim(config('inlocuireparbriz.canonical_url'), '/');
+    $orgId = $base.'/#organization';
 
     $org = [
         '@type' => 'Organization',
         '@id' => $orgId,
         'name' => $company['brand'],
-        'url' => url('/'),
-        'logo' => asset('assets/img/favicon.svg'),
+        'url' => $base.'/',
+        'logo' => $base.'/assets/img/icon-512.png',
         'description' => 'Platformă pentru înlocuirea și repararea parbrizelor, lunetelor și geamurilor auto: cererea ta ajunge la un atelier partener verificat din zona ta.',
     ];
     if ($real) {
@@ -37,8 +38,8 @@
             $org,
             [
                 '@type' => 'WebSite',
-                '@id' => url('/').'#website',
-                'url' => url('/'),
+                '@id' => $base.'/#website',
+                'url' => $base.'/',
                 'name' => $company['brand'],
                 'publisher' => ['@id' => $orgId],
                 'inLanguage' => 'ro-RO',

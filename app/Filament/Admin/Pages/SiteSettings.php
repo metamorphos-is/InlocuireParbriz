@@ -75,6 +75,7 @@ class SiteSettings extends Page implements HasSchemas
             ],
             'seo' => [
                 'noindex' => (bool) ($seo['noindex'] ?? true),
+                'google_verification' => $seo['google_verification'] ?? '',
             ],
             'dataforseo' => [
                 'login' => $dfs['login'] ?? '',
@@ -154,7 +155,11 @@ class SiteSettings extends Page implements HasSchemas
                     ->schema([
                         Toggle::make('seo.noindex')
                             ->label('Blochează indexarea (noindex) pe tot site-ul')
-                            ->helperText('Păstrează activ până la aprobarea lansării.'),
+                            ->helperText('Activ = Google nu indexează site-ul. Oprit = site lansat (meta robots, X-Robots-Tag și robots.txt se schimbă automat).'),
+                        TextInput::make('seo.google_verification')
+                            ->label('Cod verificare Google Search Console (opțional)')
+                            ->helperText('Doar dacă verifici proprietatea prin „Etichetă HTML”: lipește meta tag-ul sau doar codul din content="…". Pentru proprietate de tip Domeniu se folosește DNS.')
+                            ->maxLength(300),
                     ]),
                 Section::make('DataForSEO')
                     ->description(filled(config('services.dataforseo.login'))
@@ -212,6 +217,7 @@ class SiteSettings extends Page implements HasSchemas
         SiteSetting::setValue('seo', array_merge($oldSeo, [
             'noindex' => (bool) $state['seo']['noindex'],
             'default_robots' => $state['seo']['noindex'] ? 'noindex,nofollow' : 'index,follow',
+            'google_verification' => trim((string) ($state['seo']['google_verification'] ?? '')),
         ]));
 
         // Resetează câmpurile mascate și reîncarcă mesajele de ajutor.

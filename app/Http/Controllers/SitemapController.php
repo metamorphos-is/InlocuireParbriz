@@ -17,7 +17,7 @@ class SitemapController extends Controller
         }
 
         foreach (\App\Models\City::query()->withPublicPage()->orderBy('sort_order')->get() as $city) {
-            $urls[] = ['loc' => $city->url(), 'changefreq' => 'weekly', 'priority' => '0.8', 'images' => \App\Support\Img::forCity($city, (int) $city->sort_order)];
+            $urls[] = ['loc' => $city->url(), 'changefreq' => 'weekly', 'priority' => '0.8', 'images' => \App\Support\Img::forCity($city, (int) $city->sort_order), 'lastmod' => $city->updated_at];
         }
 
         foreach (range(1, 6) as $n) {
@@ -30,7 +30,7 @@ class SitemapController extends Controller
 
         $urls[] = ['loc' => route('blog.index'), 'changefreq' => 'weekly', 'priority' => '0.6'];
         foreach (\App\Models\Post::query()->published()->orderByDesc('published_at')->get() as $post) {
-            $urls[] = ['loc' => $post->url(), 'changefreq' => 'monthly', 'priority' => '0.6', 'images' => [\App\Support\Img::forPost($post)]];
+            $urls[] = ['loc' => $post->url(), 'changefreq' => 'monthly', 'priority' => '0.6', 'images' => [\App\Support\Img::forPost($post)], 'lastmod' => $post->updated_at];
         }
 
         $urls[] = ['loc' => route('services'), 'changefreq' => 'weekly', 'priority' => '0.8'];
@@ -40,7 +40,10 @@ class SitemapController extends Controller
 
         // Imaginile paginilor fixe (config/images.php) → <image:image>, pentru Google Images.
         foreach ($urls as &$u) {
-            $u['images'] ??= \App\Support\Img::forPath(parse_url($u['loc'], PHP_URL_PATH) ?: '/');
+            $path = parse_url($u['loc'], PHP_URL_PATH) ?: '/';
+            $u['images'] ??= \App\Support\Img::forPath($path);
+            $u['loc'] = \App\Support\Seo::canonical($path);
+            $u['lastmod'] = isset($u['lastmod']) ? \Illuminate\Support\Carbon::parse($u['lastmod'])->toAtomString() : null;
         }
         unset($u);
 

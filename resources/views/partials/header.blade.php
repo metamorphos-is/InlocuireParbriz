@@ -1,6 +1,6 @@
 @php
     $nav = config('navigation');
-    $company = \App\Support\Company::all();
+    $company = \App\Support\Company::display();
     $path = '/'.ltrim(request()->path(), '/');
     $isActive = fn (string $url) => $url !== '/' && (rtrim($path, '/') === rtrim(parse_url($url, PHP_URL_PATH), '/') || str_starts_with($path, rtrim(parse_url($url, PHP_URL_PATH), '/').'/'));
     $servicesActive = collect($nav['servicii']['groups'])->flatMap(fn ($g) => $g['items'])->contains(fn ($i) => $isActive($i['url'])) || $isActive('/servicii');

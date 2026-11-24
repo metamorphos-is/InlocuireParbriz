@@ -14,7 +14,7 @@
     <div class="container">
         <div class="row g-5">
             <div class="col-lg-4">
-                @php($company = \App\Support\Company::all())
+                @php($company = \App\Support\Company::display())
                 <div class="ee-feature ee-feature--stack">
                     <span class="ee-feature__icon">@include('partials.icon', ['name' => 'form', 'size' => 22])</span>
                     <div>
@@ -32,7 +32,7 @@
                     <span class="ee-feature__icon">@include('partials.icon', ['name' => 'pin', 'size' => 22])</span>
                     <div>
                         <h2 class="ee-h4">Zone deservite</h2>
-                        <p>București (sectoarele 1–6) și Ilfov. Pentru alte orașe, trimite cererea și îți confirmăm disponibilitatea unui atelier partener în zona ta.</p>
+                        <p>Cereri din toată țara, cu pagini dedicate pentru București, Ilfov și <a href="{{ url('/#orase') }}">orașele mari</a>. Din orice altă localitate, trimite cererea și îți confirmăm disponibilitatea unui atelier partener în zona ta.</p>
                     </div>
                 </div>
                 <div class="ee-feature ee-feature--stack">

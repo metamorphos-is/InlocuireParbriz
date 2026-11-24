@@ -110,8 +110,8 @@
             'datePublished' => optional($post->published_at)->toAtomString(),
             'dateModified' => $post->updated_at?->toAtomString(),
             'author' => ['@type' => 'Organization', 'name' => $post->author ?: 'Echipa inlocuireparbriz.ro'],
-            'publisher' => ['@id' => url('/').'#organization'],
-            'mainEntityOfPage' => $post->url(),
+            'publisher' => ['@id' => rtrim(config('inlocuireparbriz.canonical_url'), '/').'/#organization'],
+            'mainEntityOfPage' => \App\Support\Seo::canonical('blog/'.$post->slug),
             'inLanguage' => 'ro-RO',
         ],
         [

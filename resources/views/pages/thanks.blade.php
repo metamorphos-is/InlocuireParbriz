@@ -2,6 +2,7 @@
 
 @section('title', 'Cerere trimisă | inlocuireparbriz.ro')
 @section('description', 'Am primit cererea ta. Echipa inlocuireparbriz.ro te contactează în curând.')
+@section('noindex', '1')
 
 @section('content')
 <section class="ee-section">

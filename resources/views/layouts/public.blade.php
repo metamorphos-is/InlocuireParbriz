@@ -6,9 +6,16 @@
     <title>@yield('title', 'Înlocuire parbriz în toată țara | inlocuireparbriz.ro')</title>
     <meta name="description" content="@yield('description', 'Înlocuire, schimbare și montaj parbriz prin ateliere partenere verificate din orașul tău.')">
 
-    {{-- Pre-lansare: noindex pe toate paginile publice (vezi și middleware ForceNoIndex + robots.txt) --}}
-    <meta name="robots" content="noindex, nofollow">
-    <link rel="canonical" href="@yield('canonical', url()->current())">
+    {{-- Indexarea urmează comutatorul din admin → Setări site → SEO (meta + X-Robots-Tag + robots.txt) --}}
+    @if (\App\Support\Seo::noindex() || trim($__env->yieldContent('noindex')) !== '')
+        <meta name="robots" content="noindex, nofollow">
+    @else
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    @endif
+    @if ($gsv = \App\Support\Seo::googleVerification())
+        <meta name="google-site-verification" content="{{ $gsv }}">
+    @endif
+    <link rel="canonical" href="@yield('canonical', \App\Support\Seo::canonical())">
 
     <meta property="og:locale" content="ro_RO">
     @php
@@ -18,7 +25,7 @@
     <meta property="og:site_name" content="inlocuireparbriz.ro">
     <meta property="og:title" content="@yield('title', 'Înlocuire parbriz în toată țara | inlocuireparbriz.ro')">
     <meta property="og:description" content="@yield('description', 'Înlocuire, schimbare și montaj parbriz prin ateliere partenere verificate din orașul tău.')">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:url" content="@yield('canonical', \App\Support\Seo::canonical())">
     @if ($ogImg)
     <meta property="og:image" content="{{ $ogImg['og'] }}">
     <meta property="og:image:width" content="1200">

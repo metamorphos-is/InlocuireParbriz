@@ -36,6 +36,24 @@ final class Company
         return array_merge(self::DEFAULTS, array_filter($stored, fn ($v) => $v !== null));
     }
 
+    /**
+     * Datele pentru site-ul public. Cât timp „Date de test” e activ, telefonul și datele juridice
+     * de test NU se afișează (site-ul e indexat — nu arătăm vizitatorilor un număr inexistent).
+     *
+     * @return array<string,mixed>
+     */
+    public static function display(): array
+    {
+        $c = self::all();
+        if (! empty($c['is_test'])) {
+            foreach (['phone', 'whatsapp', 'legal_name', 'cui', 'reg_com'] as $k) {
+                $c[$k] = '';
+            }
+        }
+
+        return $c;
+    }
+
     public static function get(string $key, mixed $default = null): mixed
     {
         return self::all()[$key] ?? $default;
@@ -49,7 +67,7 @@ final class Company
     /** Telefon în format E.164 pentru link-uri tel: (ex. +40700000000). */
     public static function phoneHref(): ?string
     {
-        $digits = preg_replace('/\D+/', '', (string) self::get('phone'));
+        $digits = preg_replace('/\D+/', '', (string) (self::display()['phone'] ?? ''));
         if ($digits === '') {
             return null;
         }
