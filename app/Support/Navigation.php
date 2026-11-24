@@ -57,5 +57,6 @@ final class Navigation
     public static function forget(): void
     {
         Cache::forget('nav:cities:v1');
+        Cache::forget('home:cities:v1');
     }
 }

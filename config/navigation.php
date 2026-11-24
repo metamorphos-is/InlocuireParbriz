@@ -16,7 +16,7 @@ return [
             [
                 'title' => 'Înlocuire',
                 'items' => [
-                    ['icon' => 'windshield', 'label' => 'Înlocuire parbriz', 'hint' => 'Parbriz nou, potrivit modelului și dotărilor', 'url' => '/inlocuire-parbriz-bucuresti'],
+                    ['icon' => 'windshield', 'label' => 'Înlocuire parbriz', 'hint' => 'Parbriz nou, potrivit modelului și dotărilor', 'url' => '/'],
                     ['icon' => 'rear', 'label' => 'Lunetă și geamuri laterale', 'hint' => 'Geam spate, portieră sau geam fix', 'url' => '/inlocuire-luneta-si-geamuri-laterale'],
                     ['icon' => 'home', 'label' => 'Montaj la domiciliu', 'hint' => 'La tine acasă sau la birou, când condițiile permit', 'url' => '/inlocuire-parbriz-la-domiciliu'],
                 ],
@@ -79,7 +79,7 @@ return [
                 'items' => [],
             ],
         ],
-        'card' => ['kicker' => 'Zone deservite', 'title' => 'București, Ilfov și în curs de extindere', 'url' => '/inlocuire-parbriz-bucuresti'],
+        'card' => ['kicker' => 'Zone deservite', 'title' => 'Toate orașele cu pagină dedicată', 'url' => '/#orase'],
     ],
 
     'simple' => [

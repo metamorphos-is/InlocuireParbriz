@@ -203,3 +203,27 @@
 .ip-city-links a:hover { border-color: var(--ip-blue); color: var(--ip-blue); }
 .ip-city-links .ee-icon { color: var(--ip-cta); }
 @media (max-width: 991.98px) { .ip-hero__grid { grid-template-columns: 1fr; gap: 1.5rem; } }
+
+/* ---------- Prima pagină ---------- */
+.ip-hero--home { padding: 3rem 0 3.5rem; }
+.ip-accent { color: var(--ip-blue); }
+.ip-hero__points { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: 1.5rem 0 0; padding: 0; list-style: none; color: var(--ip-ink-2); font-weight: 600; font-size: .95rem; }
+.ip-hero__points li { display: inline-flex; align-items: center; gap: .4rem; }
+.ip-hero__points svg { color: #16A34A; }
+.ip-finder { padding: 1.5rem; border: 1px solid var(--ip-line); border-radius: 16px; background: #fff; box-shadow: 0 20px 40px -24px rgba(16, 24, 39, .35); }
+.ip-finder__title { display: flex; align-items: center; gap: .5rem; margin: 0 0 1rem; color: var(--ip-ink); font-size: 1.1rem; font-weight: 800; }
+.ip-finder__title svg { color: var(--ip-cta); }
+.ip-finder__form { display: grid; gap: .75rem; }
+.ip-finder__form .form-select { min-height: 48px; border-color: var(--ip-line); border-radius: 10px; font-weight: 600; }
+.ip-finder__note { margin: .9rem 0 0; color: var(--ip-muted); font-size: .85rem; line-height: 1.5; }
+.ip-section-head { max-width: 720px; margin-bottom: 1.75rem; }
+.ip-section-head .ip-section-title { margin-bottom: .5rem; }
+.ip-section-head p { margin: 0; color: var(--ip-muted); }
+@media (min-width: 1200px) { .ip-service-grid--4 { grid-template-columns: repeat(4, 1fr); } }
+.ip-service-card--static:hover { border-color: var(--ip-line); box-shadow: none; transform: none; }
+.ip-regions { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.ip-region { padding: 1.25rem; border: 1px solid var(--ip-line); border-radius: var(--ip-radius); background: #fff; }
+.ip-region__title { margin: 0 0 .75rem; color: var(--ip-ink); font-size: 1rem; font-weight: 800; }
+.ip-region__list { display: grid; gap: .35rem; margin: 0; padding: 0; list-style: none; }
+.ip-region__list a { color: var(--ip-ink-2); text-decoration: none; font-size: .95rem; }
+.ip-region__list a:hover { color: var(--ip-blue); text-decoration: underline; }

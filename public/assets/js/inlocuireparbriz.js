@@ -135,3 +135,15 @@
         }
     });
 })();
+
+// Prima pagină: alegerea orașului duce la pagina orașului (sau la formular pentru „alt oraș”).
+(function () {
+    var form = document.querySelector('[data-ip-city-finder]');
+    if (!form) return;
+    var select = form.querySelector('select');
+    form.addEventListener('submit', function (e) {
+        var opt = select.options[select.selectedIndex];
+        var url = opt && opt.getAttribute('data-url');
+        if (url) { e.preventDefault(); window.location.href = url; }
+    });
+})();

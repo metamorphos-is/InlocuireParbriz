@@ -13,6 +13,18 @@ class CityPagesTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_homepage_is_national_and_links_city_pages(): void
+    {
+        $this->seed();
+        $html = $this->get('/')->assertOk()->getContent();
+        $this->assertStringContainsString('Înlocuire parbriz în orașul tău', $html);
+        $this->assertStringNotContainsString('marketplace', strtolower($html));
+        foreach (City::query()->withPublicPage()->get() as $c) {
+            $this->assertStringContainsString('/inlocuire-parbriz-'.$c->slug.'"', $html);
+        }
+        $this->assertStringContainsString('/inlocuire-parbriz-bucuresti"', $html);
+    }
+
     public function test_all_seeded_city_pages_render_with_unique_titles_and_h1(): void
     {
         $this->seed();
