@@ -127,4 +127,16 @@ class DataForSeoTest extends TestCase
         $this->actingAs($admin)->get('/admin/setari-site')->assertOk()->assertDontSee('test-pass');
         $this->actingAs($admin)->get('/admin/dataforseo')->assertDontSee('test-pass');
     }
+
+    public function test_set_credentials_command_stores_encrypted(): void
+    {
+        config(['services.dataforseo.login' => null, 'services.dataforseo.password' => null]);
+        $this->artisan('seo:set-credentials', ['login' => 'abc', 'password' => 'secret123'])
+            ->doesntExpectOutputToContain('secret123')->assertSuccessful();
+
+        $stored = \App\Models\SiteSetting::query()->where('key', 'dataforseo')->value('value');
+        $this->assertStringStartsWith('enc:', $stored['password']);
+        $this->assertTrue(DataForSeoClient::isConfigured());
+        $this->assertSame('secret123', DataForSeoClient::credentials()['password']);
+    }
 }
