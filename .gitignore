@@ -1,0 +1,31 @@
+/vendor
+/node_modules
+.env
+.env.*
+!.env.example
+/storage/*.key
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+.phpunit.result.cache
+
+# Configurare de producție cu credențiale (rămâne doar pe server)
+/bootstrap/production-settings.php
+/secrets
+env.server
+
+# Bază de date locală / cache-uri
+/database/*.sqlite
+/bootstrap/cache/*.php
+
+# Asset-uri Filament generate de `php artisan filament:upgrade` (rulează la composer install)
+/public/js/filament
+/public/css/filament
+/public/fonts/filament
+
+# Scripturi de instalare one-shot — nu se mai urcă niciodată
+/public/setup-once.php
+/public/cleanup-temp.php
+/public/install-vendor.php
+/public/debug-boot.php
