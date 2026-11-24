@@ -101,7 +101,7 @@
             ['Verificăm sticla potrivită', 'Ținem cont de senzor de ploaie, cameră, încălzire sau HUD — două parbrize care par identice pot fi diferite.'],
             ['Primești oferta', 'Atelierul partener din orașul tău îți trimite prețul, termenul și locul montajului.'],
             ['Montajul', 'La atelier sau la adresa ta, apoi indicațiile pentru timpul de uscare a adezivului.'],
-        ]])
+        ], 'wide' => true])
     </div>
 </section>
 
