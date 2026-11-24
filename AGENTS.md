@@ -30,7 +30,7 @@ Proiectul e lucrat de mai mulți asistenți AI. Ca să nu ne călcăm pe picioar
 
 ## 3. Secrete
 - Nu pune niciodată în Git: `.env`, `bootstrap/production-settings.php`, `secrets/`, parole, chei API, token-uri.
-- Credențialele de producție există doar pe server (`site/.env`).
+- Credențialele de producție există doar pe server, în `public_html/.env` (aplicația din `site/` îl citește automat din folderul părinte — vezi `bootstrap/app.php`).
 - Parola de admin nu se scrie în cod. Seeder-ul folosește `ADMIN_INITIAL_PASSWORD` din `.env`.
 
 ## 4. Interzis pe server
