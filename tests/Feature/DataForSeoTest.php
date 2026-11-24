@@ -58,6 +58,10 @@ class DataForSeoTest extends TestCase
             ]]])),
             '*/dataforseo_labs/google/bulk_keyword_difficulty/live' => Http::response($this->ok([['items' => [['keyword' => 'inlocuire parbriz', 'keyword_difficulty' => 18]]]])),
             '*/dataforseo_labs/google/search_intent/live' => Http::response($this->ok([['items' => [['keyword' => 'inlocuire parbriz', 'keyword_intent' => ['label' => 'commercial', 'probability' => 0.9]]]]])),
+            '*/dataforseo_labs/google/serp_competitors/live' => Http::response($this->ok([['items' => [
+                ['domain' => 'www.matbel.ro', 'avg_position' => 3.2, 'keywords_count' => 40, 'etv' => 900],
+                ['domain' => 'olx.ro', 'avg_position' => 5, 'keywords_count' => 80],
+            ]]])),
             '*/appendix/user_data' => Http::response($this->ok([['login' => 'test-login', 'money' => ['balance' => 49.5, 'total' => 0.5]]], 0)),
         ]);
     }
@@ -138,5 +142,25 @@ class DataForSeoTest extends TestCase
         $this->assertStringStartsWith('enc:', $stored['password']);
         $this->assertTrue(DataForSeoClient::isConfigured());
         $this->assertSame('secret123', DataForSeoClient::credentials()['password']);
+    }
+
+    public function test_competitors_plan_uses_labs_and_skips_generic_domains(): void
+    {
+        $this->fakeApi();
+        config(['seo-research.competitors_to_analyze' => 3]);
+        $run = app(ResearchRunner::class)->run(SeoResearchRun::query()->create(['type' => 'competitors_plan', 'params' => []]));
+
+        $this->assertSame('done', $run->status, (string) $run->error);
+        $this->assertSame(['matbel.ro'], array_column($run->summary['competitors'], 'domain'));
+        $this->assertTrue(SeoKeyword::query()->where('keyword', 'parbriz bmw')->exists());
+    }
+
+    public function test_serp_extracts_real_domain_from_goto_links(): void
+    {
+        Http::fake(['*/serp/google/organic/live/advanced' => Http::response($this->ok([['items' => [
+            ['type' => 'organic', 'rank_group' => 1, 'domain' => 'google.com', 'url' => 'https://google.com/goto?url=x', 'breadcrumb' => 'https://www.matbel.ro › servicii'],
+        ]]]))]);
+        $serp = app(KeywordResearch::class)->serp('inlocuire parbriz');
+        $this->assertSame('www.matbel.ro', $serp['organic'][0]['domain']);
     }
 }

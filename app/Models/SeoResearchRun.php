@@ -15,6 +15,7 @@ class SeoResearchRun extends Model
         'related' => 'Cuvinte înrudite',
         'serp' => 'Analiză SERP (top 10 Google)',
         'competitor' => 'Cuvintele pe care se poziționează un domeniu',
+        'competitors_plan' => 'Competitori (DataForSEO Labs) + cuvintele lor',
     ];
 
     protected $fillable = [

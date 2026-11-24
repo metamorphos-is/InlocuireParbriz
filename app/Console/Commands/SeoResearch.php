@@ -34,7 +34,7 @@ class SeoResearch extends Command
         if ($id = $this->option('run')) {
             $runs->push(SeoResearchRun::query()->findOrFail($id));
         } elseif ($plan = $this->option('plan')) {
-            $type = $plan === 'national' ? 'national_plan' : $plan;
+            $type = match ($plan) { 'national' => 'national_plan', 'competitors' => 'competitors_plan', default => $plan };
             if ($this->option('once') && SeoResearchRun::query()->where('type', $type)->whereIn('status', ['pending', 'running', 'done'])->exists()) {
                 $this->line('Planul a fost deja pornit — nimic de făcut.');
 

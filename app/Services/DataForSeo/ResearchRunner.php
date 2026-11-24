@@ -28,6 +28,7 @@ class ResearchRunner
                 'related' => $this->simpleExpand($research, $run, 'related'),
                 'serp' => ['serp' => [$run->params['keyword'] => $research->serp($run->params['keyword'])]],
                 'competitor' => $this->competitor($research, $run),
+                'competitors_plan' => $this->competitorsPlan($research),
                 default => throw new \InvalidArgumentException("Tip necunoscut: {$run->type}"),
             };
 
@@ -37,7 +38,7 @@ class ResearchRunner
 
             $run->update([
                 'status' => 'done',
-                'summary' => Arr::only($summary, ['keywords_saved', 'cost_usd', 'top_keywords', 'competitors', 'notes']),
+                'summary' => Arr::only($summary, ['keywords_saved', 'cost_usd', 'competitors', 'notes']),
                 'cost' => $cost,
                 'finished_at' => now(),
             ]);
@@ -107,7 +108,7 @@ class ResearchRunner
         arsort($domainScore);
 
         // Excludem platformele generaliste — nu sunt competitori comparabili.
-        $generic = ['olx.ro', 'emag.ro', 'facebook.com', 'youtube.com', 'wikipedia.org', 'autovit.ro', 'google.com', 'tiktok.com', 'instagram.com', 'reddit.com', 'publi24.ro', 'lajumate.ro', 'cylex.ro', 'paginiaurii.ro', 'infocif.ro', 'listafirme.ro'];
+        $generic = $this->genericDomains();
         $competitors = array_slice(array_filter(
             array_keys($domainScore),
             fn ($d) => ! in_array($d, $generic, true) && ! str_contains($d, 'inlocuireparbriz')
@@ -152,6 +153,47 @@ class ResearchRunner
             'all_keywords' => $this->allKeywords(),
             'notes' => $notes,
         ];
+    }
+
+    /** Competitori din baza Labs (pe cuvintele noastre cele mai valoroase) + cuvintele lor → gap-uri. */
+    protected function competitorsPlan(KeywordResearch $r): array
+    {
+        $cfg = config('seo-research');
+        $seedKeywords = SeoKeyword::query()->where('search_volume', '>', 0)
+            ->orderByDesc('search_volume')->limit(150)->pluck('keyword')->all();
+        $seedKeywords = array_values(array_unique(array_merge($cfg['serp_keywords'], $seedKeywords)));
+
+        $all = $r->serpCompetitors($seedKeywords, 60);
+        $generic = $this->genericDomains();
+        $competitors = array_values(array_filter($all, fn ($c) => $c['domain'] !== '' && ! in_array($c['domain'], $generic, true)
+            && ! str_contains($c['domain'], 'inlocuireparbriz') && ! preg_match('/(google|youtube|facebook|wikipedia|olx|emag|reddit)\./', $c['domain'])));
+
+        $detail = [];
+        $saved = 0;
+        foreach (array_slice($competitors, 0, $cfg['competitors_to_analyze']) as $c) {
+            $ranked = $r->rankedKeywords($c['domain'], $cfg['competitor_keywords_limit']);
+            $relevant = array_values(array_filter($ranked, fn ($k) => $this->isRelevant($k['keyword'])));
+            $saved += $r->store($relevant);
+            $detail[$c['domain']] = $c + [
+                'ranked_count' => count($ranked),
+                'relevant_count' => count($relevant),
+                'top' => array_slice(array_map(fn ($k) => Arr::only($k, ['keyword', 'search_volume', 'position', 'url']), $relevant), 0, 80),
+            ];
+        }
+
+        return [
+            'keywords_saved' => $saved,
+            'competitors' => array_slice($competitors, 0, 25),
+            'competitor_detail' => $detail,
+            'top_keywords' => $this->topKeywords(60),
+            'all_keywords' => $this->allKeywords(),
+        ];
+    }
+
+    /** @return array<int,string> */
+    protected function genericDomains(): array
+    {
+        return ['olx.ro', 'emag.ro', 'facebook.com', 'youtube.com', 'wikipedia.org', 'ro.wikipedia.org', 'autovit.ro', 'google.com', 'tiktok.com', 'instagram.com', 'reddit.com', 'publi24.ro', 'lajumate.ro', 'cylex.ro', 'paginiaurii.ro', 'infocif.ro', 'listafirme.ro', 'termene.ro', 'romdata.ro', 'firme.info', 'risco.ro', 'totalfirme.ro', 'anuntul.ro', 'autoblog.md', '999.md'];
     }
 
     protected function simpleVolume(KeywordResearch $r, SeoResearchRun $run): array

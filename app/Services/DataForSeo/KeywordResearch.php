@@ -162,7 +162,8 @@ class KeywordResearch
             }
             $organic[] = [
                 'position' => (int) ($item['rank_group'] ?? 0),
-                'domain' => (string) ($item['domain'] ?? ''),
+                'domain' => $this->realDomain($item),
+                'website_name' => $item['website_name'] ?? null,
                 'url' => (string) ($item['url'] ?? ''),
                 'title' => $item['title'] ?? null,
                 'type' => 'organic',
@@ -170,6 +171,54 @@ class KeywordResearch
         }
 
         return ['organic' => $organic, 'features' => $features];
+    }
+
+    /**
+     * Google întoarce uneori linkuri „google.com/goto?...” — luăm domeniul real din breadcrumb.
+     *
+     * @param  array<string,mixed>  $item
+     */
+    protected function realDomain(array $item): string
+    {
+        $domain = (string) ($item['domain'] ?? '');
+        if ($domain !== '' && ! str_contains($domain, 'google.')) {
+            return $domain;
+        }
+        foreach (['breadcrumb', 'url'] as $field) {
+            $value = (string) ($item[$field] ?? '');
+            if (preg_match('#https?://([^/\s›]+)#u', $value, $m) && ! str_contains($m[1], 'google.')) {
+                return strtolower($m[1]);
+            }
+        }
+
+        return $domain;
+    }
+
+    /**
+     * Domeniile care apar cel mai des în top pentru o listă de cuvinte (Labs, fără scraping live).
+     *
+     * @param  array<int,string>  $keywords
+     * @return array<int,array<string,mixed>>
+     */
+    public function serpCompetitors(array $keywords, int $limit = 40): array
+    {
+        $tasks = $this->client->post('/v3/dataforseo_labs/google/serp_competitors/live', [[
+            'keywords' => array_values(array_slice(array_unique($keywords), 0, 200)),
+            'location_code' => $this->loc(),
+            'language_code' => $this->lang(),
+            'item_types' => ['organic'],
+            'limit' => $limit,
+        ]]);
+
+        return array_map(fn ($i) => [
+            'domain' => preg_replace('/^www\./', '', (string) ($i['domain'] ?? '')),
+            'avg_position' => $i['avg_position'] ?? null,
+            'median_position' => $i['median_position'] ?? null,
+            'keywords_count' => $i['keywords_count'] ?? null,
+            'etv' => $i['etv'] ?? null,
+            'visibility' => $i['visibility'] ?? null,
+            'rating' => $i['rating'] ?? null,
+        ], DataForSeoClient::firstResult($tasks)[0]['items'] ?? []);
     }
 
     /**
