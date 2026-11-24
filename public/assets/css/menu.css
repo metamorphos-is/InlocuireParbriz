@@ -217,7 +217,7 @@
 .ip-finder__form .form-select { min-height: 48px; border-color: var(--ip-line); border-radius: 10px; font-weight: 600; }
 .ip-finder__note { margin: .9rem 0 0; color: var(--ip-muted); font-size: .85rem; line-height: 1.5; }
 .ip-section-head { max-width: 720px; margin-bottom: 1.75rem; }
-.ip-section-head .ip-section-title { margin-bottom: .5rem; }
+.ip-section-head .ip-section-title { margin: 0 0 .5rem; color: var(--ip-ink); font-family: var(--ee-font-head, sans-serif); font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 800; letter-spacing: -.01em; text-transform: none; line-height: 1.2; }
 .ip-section-head p { margin: 0; color: var(--ip-muted); }
 @media (min-width: 1200px) { .ip-service-grid--4 { grid-template-columns: repeat(4, 1fr); } }
 .ip-service-card--static:hover { border-color: var(--ip-line); box-shadow: none; transform: none; }
