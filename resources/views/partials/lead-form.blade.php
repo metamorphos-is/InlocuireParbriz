@@ -1,7 +1,7 @@
 @php
     $selectedCategory = old('category', $selected ?? request('serviciu'));
     $compact = $compact ?? false;
-    $area = old('area_type', 'bucuresti');
+    $area = old('area_type', in_array(request('zona'), ['bucuresti', 'ilfov', 'alt_oras'], true) ? request('zona') : 'bucuresti');
 @endphp
 <form method="POST" action="{{ route('lead.store') }}" class="ee-form @if($compact) ee-form--compact @endif" novalidate data-lead-form>
     @csrf

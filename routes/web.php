@@ -30,6 +30,8 @@ Route::get('/inlocuire-parbriz-bucuresti/sector-{n}', [SeoPageController::class,
     ->whereNumber('n')
     ->name('seo.sector');
 
+Route::view('/servicii', 'pages.services')->name('services');
+
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::get('/politica-de-confidentialitate', [ContactController::class, 'privacy'])->name('privacy');
 Route::redirect('/politica-confidentialitate', '/politica-de-confidentialitate');

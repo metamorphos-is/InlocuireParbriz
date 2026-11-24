@@ -24,6 +24,7 @@ class SitemapController extends Controller
             ];
         }
 
+        $urls[] = ['loc' => route('services'), 'changefreq' => 'weekly', 'priority' => '0.8'];
         $urls[] = ['loc' => route('contact'), 'changefreq' => 'monthly', 'priority' => '0.5'];
         $urls[] = ['loc' => route('lead.create'), 'changefreq' => 'monthly', 'priority' => '0.6'];
         $urls[] = ['loc' => url('/despre-noi'), 'changefreq' => 'monthly', 'priority' => '0.4'];

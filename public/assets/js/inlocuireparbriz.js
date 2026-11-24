@@ -1,51 +1,94 @@
 (function () {
     'use strict';
 
-    var toggle = document.querySelector('[data-nav-toggle]');
-    var nav = document.querySelector('[data-nav]');
-    if (toggle && nav) {
-        toggle.addEventListener('click', function () {
-            var open = nav.classList.toggle('is-open');
-            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        });
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && nav.classList.contains('is-open')) {
-                nav.classList.remove('is-open');
-                toggle.setAttribute('aria-expanded', 'false');
-                closeAllDrops();
-                toggle.focus();
-            }
-        });
+    /* ---------- Header + mega-menu (ip-*) ---------- */
+    var burger = document.querySelector('[data-ip-burger]');
+    var nav = document.querySelector('[data-ip-nav]');
+    var desktop = window.matchMedia('(min-width: 1200px)');
+    var drops = Array.prototype.slice.call(document.querySelectorAll('[data-ip-drop]'));
+    var hoverTimer = null;
+
+    function setDrop(item, open) {
+        item.classList.toggle('is-open', open);
+        var btn = item.querySelector('[data-ip-drop-btn]');
+        if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    function closeAll(except) {
+        drops.forEach(function (item) { if (item !== except) setDrop(item, false); });
     }
 
-    function closeAllDrops(except) {
-        document.querySelectorAll('[data-nav-drop]').forEach(function (item) {
-            if (except && item === except) return;
-            item.classList.remove('is-open');
-            var btn = item.querySelector('[data-nav-drop-btn]');
-            if (btn) btn.setAttribute('aria-expanded', 'false');
-        });
-    }
-
-    document.querySelectorAll('[data-nav-drop]').forEach(function (item) {
-        var btn = item.querySelector('[data-nav-drop-btn]');
+    drops.forEach(function (item) {
+        var btn = item.querySelector('[data-ip-drop-btn]');
         if (!btn) return;
         btn.addEventListener('click', function (e) {
             e.preventDefault();
-            e.stopPropagation();
             var open = !item.classList.contains('is-open');
-            closeAllDrops();
-            if (open) {
-                item.classList.add('is-open');
-                btn.setAttribute('aria-expanded', 'true');
-            }
+            closeAll(item);
+            setDrop(item, open);
+        });
+        // Desktop: deschidere la hover, cu mică întârziere la ieșire.
+        item.addEventListener('mouseenter', function () {
+            if (!desktop.matches) return;
+            clearTimeout(hoverTimer);
+            closeAll(item);
+            setDrop(item, true);
+        });
+        item.addEventListener('mouseleave', function () {
+            if (!desktop.matches) return;
+            hoverTimer = setTimeout(function () { setDrop(item, false); }, 180);
         });
     });
 
     document.addEventListener('click', function (e) {
-        if (!e.target.closest('[data-nav-drop]')) {
-            closeAllDrops();
+        if (desktop.matches && !e.target.closest('[data-ip-drop]')) closeAll();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        var open = drops.filter(function (d) { return d.classList.contains('is-open'); })[0];
+        if (open) {
+            setDrop(open, false);
+            var b = open.querySelector('[data-ip-drop-btn]');
+            if (b) b.focus();
+        } else if (nav && nav.classList.contains('is-open')) {
+            nav.classList.remove('is-open');
+            burger.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+            burger.focus();
         }
+    });
+
+    if (burger && nav) {
+        burger.addEventListener('click', function () {
+            var open = nav.classList.toggle('is-open');
+            burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+            document.body.style.overflow = open ? 'hidden' : '';
+            if (!open) closeAll();
+        });
+        desktop.addEventListener('change', function () {
+            nav.classList.remove('is-open');
+            burger.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+            closeAll();
+        });
+    }
+
+    // Taburi „Locații” (hover/click pe regiune → schimbă panoul).
+    document.querySelectorAll('[data-ip-tabs]').forEach(function (wrap) {
+        var tabs = wrap.querySelectorAll('[data-ip-tab]');
+        function show(key) {
+            tabs.forEach(function (t) {
+                var on = t.getAttribute('data-ip-tab') === key;
+                t.classList.toggle('is-active', on);
+                t.setAttribute('aria-selected', on ? 'true' : 'false');
+            });
+            wrap.querySelectorAll('[data-ip-panel]').forEach(function (p) {
+                p.hidden = p.getAttribute('data-ip-panel') !== key;
+            });
+        }
+        tabs.forEach(function (t) {
+            t.addEventListener('click', function () { show(t.getAttribute('data-ip-tab')); });
+            t.addEventListener('mouseenter', function () { if (desktop.matches) show(t.getAttribute('data-ip-tab')); });
+        });
     });
 
     document.querySelectorAll('form.ee-form').forEach(function (form) {
