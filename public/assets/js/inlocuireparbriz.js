@@ -9,6 +9,7 @@
     var hoverTimer = null;
 
     function setDrop(item, open) {
+        if (open && !item.classList.contains('is-open')) item._openedAt = Date.now();
         item.classList.toggle('is-open', open);
         var btn = item.querySelector('[data-ip-drop-btn]');
         if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -22,9 +23,11 @@
         if (!btn) return;
         btn.addEventListener('click', function (e) {
             e.preventDefault();
-            var open = !item.classList.contains('is-open');
+            var isOpen = item.classList.contains('is-open');
+            // Desktop: dacă meniul tocmai s-a deschis la hover, click-ul nu-l închide.
+            if (isOpen && desktop.matches && Date.now() - (item._openedAt || 0) < 600) return;
             closeAll(item);
-            setDrop(item, open);
+            setDrop(item, !isOpen);
         });
         // Desktop: deschidere la hover, cu mică întârziere la ieșire.
         item.addEventListener('mouseenter', function () {

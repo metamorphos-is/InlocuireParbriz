@@ -26,7 +26,8 @@
 .ip-logo:hover { color: var(--ip-ink); }
 .ip-logo__mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: var(--ip-ink); color: #fff; }
 .ip-logo__text { display: flex; flex-direction: column; font-family: var(--ee-font-head, 'Manrope', sans-serif); font-size: 1.2rem; font-weight: 700; line-height: 1.1; letter-spacing: -.01em; }
-.ip-logo__text strong { color: var(--ip-cta); font-weight: 800; display: inline; }
+.ip-logo__name { white-space: nowrap; }
+.ip-logo__text strong { color: var(--ip-cta); font-weight: 800; }
 .ip-logo__text small { font-family: var(--ee-font-body, sans-serif); font-size: .72rem; font-weight: 500; color: var(--ip-muted); letter-spacing: 0; margin-top: 2px; }
 
 .ip-nav__list { list-style: none; margin: 0; padding: 0; }
