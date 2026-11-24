@@ -15,7 +15,7 @@ use Illuminate\Console\Command;
  */
 class SeoResearch extends Command
 {
-    protected $signature = 'seo:research {--pending} {--plan=} {--run=}';
+    protected $signature = 'seo:research {--pending} {--plan=} {--run=} {--once : Cu --plan: nu porni dacă există deja o rulare a planului (în curs sau reușită)}';
 
     protected $description = 'Rulează cercetarea de cuvinte-cheie DataForSEO';
 
@@ -34,7 +34,13 @@ class SeoResearch extends Command
         if ($id = $this->option('run')) {
             $runs->push(SeoResearchRun::query()->findOrFail($id));
         } elseif ($plan = $this->option('plan')) {
-            $runs->push(SeoResearchRun::query()->create(['type' => $plan === 'national' ? 'national_plan' : $plan, 'params' => []]));
+            $type = $plan === 'national' ? 'national_plan' : $plan;
+            if ($this->option('once') && SeoResearchRun::query()->where('type', $type)->whereIn('status', ['pending', 'running', 'done'])->exists()) {
+                $this->line('Planul a fost deja pornit — nimic de făcut.');
+
+                return self::SUCCESS;
+            }
+            $runs->push(SeoResearchRun::query()->create(['type' => $type, 'params' => []]));
         } elseif ($this->option('pending')) {
             $runs = SeoResearchRun::query()->where('status', 'pending')->oldest()->limit(3)->get();
         }
