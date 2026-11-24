@@ -114,8 +114,8 @@ class DatabaseSeeder extends Seeder
             [
                 'key' => 'lead.admin_email',
                 'channel' => 'email',
-                'subject' => 'Cerere nouă {reference} — inlocuireparbriz.ro',
-                'body' => "Cerere {reference}\nClient: {customer_name}\nTelefon: {phone}\nVehicul: {vehicle_brand} {vehicle_model} {vehicle_year}\nGeam: {glass_type}\nMesaj: {description}",
+                'subject' => 'Cerere nouă {reference} – {customer_name}, {vehicle_brand} {vehicle_model}',
+                'body' => 'A sosit o cerere nouă pe site. Detaliile sunt mai jos — sună clientul sau deschide cererea în admin ca s-o aloci unui atelier partener.',
             ],
             [
                 'key' => 'lead.customer_sms',
@@ -132,8 +132,14 @@ class DatabaseSeeder extends Seeder
             [
                 'key' => 'lead.provider_email',
                 'channel' => 'email',
-                'subject' => 'Cerere alocată {reference}',
-                'body' => "Bună {provider_name},\nȚi s-a alocat cererea {reference}.\nClient: {customer_name} / {customer_phone}\nVehicul: {vehicle_brand} {vehicle_model} {vehicle_year}\nGeam: {glass_type}\nAdresă: {address}\nIntră în portal pentru detalii.",
+                'subject' => 'Cerere nouă alocată: {reference} – {vehicle_brand} {vehicle_model}',
+                'body' => "Bună, {provider_name}!\n\nȚi-am alocat o cerere nouă. Mai jos găsești detaliile mașinii și ale clientului.",
+            ],
+            [
+                'key' => 'lead.customer_email',
+                'channel' => 'email',
+                'subject' => 'Am primit cererea ta ({reference}) – inlocuireparbriz.ro',
+                'body' => "Îți mulțumim pentru cerere. Am primit detaliile și ne ocupăm de ea.\n\nMai jos ai un rezumat al datelor trimise. Dacă ai greșit ceva, nicio problemă — clarificăm când te contactăm.",
             ],
         ];
 
@@ -164,7 +170,7 @@ class DatabaseSeeder extends Seeder
             'encryption' => 'ssl',
             'from_address' => 'noreply@inlocuireparbriz.ro',
             'from_name' => 'inlocuireparbriz.ro',
-            'admin_notify_to' => 'admin@inlocuireparbriz.ro',
+            'admin_notify_to' => 'vornicugabi96@gmail.com',
         ]);
 
         SiteSetting::setValue('smso', [

@@ -43,6 +43,23 @@ class SiteSettings extends Page implements HasSchemas
     /** @var array<string,mixed> */
     public ?array $data = [];
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('testEmail')
+                ->label('Trimite email de test')
+                ->icon(\Filament\Support\Icons\Heroicon::OutlinedEnvelope)
+                ->modalDescription('Trimite un exemplu de notificare „cerere nouă” (date fictive) la adresele de notificare salvate. Salvează întâi setările, dacă le-ai modificat.')
+                ->action(function () {
+                    $notifier = app(\App\Services\Notifications\LeadNotifier::class);
+                    $sent = $notifier->sendTestEmail();
+                    $sent
+                        ? Notification::make()->title('Email trimis la '.implode(', ', $sent))->success()->send()
+                        : Notification::make()->title('Emailul nu a plecat')->body($notifier->lastError ?: 'Verifică setările SMTP.')->danger()->send();
+                }),
+        ];
+    }
+
     public function mount(): void
     {
         $brand = (array) SiteSetting::getValue('brand', []);
@@ -67,6 +84,7 @@ class SiteSettings extends Page implements HasSchemas
                 'encryption' => $smtp['encryption'] ?? 'ssl',
                 'from_address' => $smtp['from_address'] ?? '',
                 'from_name' => $smtp['from_name'] ?? 'inlocuireparbriz.ro',
+                'admin_notify_to' => $smtp['admin_notify_to'] ?? \App\Services\Notifications\LeadNotifier::DEFAULT_ADMIN_EMAIL,
             ],
             'smso' => [
                 'enabled' => (bool) ($smso['enabled'] ?? false),
@@ -122,6 +140,18 @@ class SiteSettings extends Page implements HasSchemas
                     ->columns(2)
                     ->schema([
                         Toggle::make('smtp.enabled')->label('Trimitere email activă')->columnSpanFull(),
+                        TextInput::make('smtp.admin_notify_to')
+                            ->label('Email pentru notificări „cerere nouă”')
+                            ->helperText('Aici primești fiecare cerere nouă. Poți pune mai multe adrese, separate prin virgulă.')
+                            ->placeholder(\App\Services\Notifications\LeadNotifier::DEFAULT_ADMIN_EMAIL)
+                            ->rule(fn () => function (string $attribute, $value, \Closure $fail) {
+                                foreach (array_filter(array_map('trim', preg_split('/[,;\s]+/', (string) $value))) as $e) {
+                                    if (! filter_var($e, FILTER_VALIDATE_EMAIL)) {
+                                        $fail("„{$e}” nu este o adresă de email validă.");
+                                    }
+                                }
+                            })
+                            ->columnSpanFull(),
                         TextInput::make('smtp.host')->label('Server SMTP (host)')->maxLength(255),
                         TextInput::make('smtp.port')->label('Port')->numeric()->minValue(1)->maxValue(65535),
                         TextInput::make('smtp.username')->label('Utilizator')->maxLength(255)->autocomplete(false),
