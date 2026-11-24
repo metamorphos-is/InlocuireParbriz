@@ -11,7 +11,7 @@
         <p>Adresa nu există sau a fost mutată. Poți continua de la prima pagină sau din lista de servicii.</p>
         <div class="ee-actions justify-content-center">
             <a href="{{ route('home') }}" class="ee-btn ee-btn--amber">Prima pagină</a>
-            <a href="{{ route('servicii.index') }}" class="ee-btn ee-btn--outline">Servicii</a>
+            <a href="{{ url('/inlocuire-parbriz-bucuresti') }}" class="ee-btn ee-btn--outline">Înlocuire parbriz București</a>
         </div>
     </div>
 </section>
