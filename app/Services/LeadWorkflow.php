@@ -48,15 +48,15 @@ class LeadWorkflow
         if ($providerId) {
             $provider = Provider::query()->find($providerId);
             if ($provider) {
-                app(LeadNotifier::class)->notifyProviderAssigned($lead->fresh(), $provider);
+                rescue(fn () => app(LeadNotifier::class)->notifyAssigned($lead->fresh(), $provider), report: true);
             }
         }
     }
 
     public function changeStatus(Lead $lead, string $status, ?int $byUserId, ?string $note = null): void
     {
-        DB::transaction(function () use ($lead, $status, $byUserId, $note) {
-            $old = $lead->status;
+        $old = $lead->status;
+        DB::transaction(function () use ($lead, $status, $byUserId, $note, $old) {
             $lead->status = $status;
             $lead->save();
 
@@ -75,5 +75,7 @@ class LeadWorkflow
                 ]);
             }
         });
+
+        rescue(fn () => app(LeadNotifier::class)->notifyStatusChanged($lead->fresh(), $old, $status, $byUserId ? \App\Models\User::query()->find($byUserId) : null), report: true);
     }
 }

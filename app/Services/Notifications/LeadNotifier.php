@@ -62,10 +62,128 @@ class LeadNotifier
         return $list ?: [self::DEFAULT_ADMIN_EMAIL];
     }
 
+    /** @return string[] Telefoanele adminului pentru SMS (Setări site → SMS → „Telefon notificări admin”). */
+    public static function adminPhones(): array
+    {
+        $smso = (array) SiteSetting::getValue('smso', []);
+
+        return array_values(array_filter(array_map('trim', preg_split('/[,;]+/', (string) ($smso['admin_phone'] ?? ''))), fn ($p) => strlen(preg_replace('/\D+/', '', $p)) >= 9));
+    }
+
     public function notifyAdminNewLead(Lead $lead): void
     {
         foreach (self::adminRecipients() as $to) {
             $this->sendEmail('lead.admin_email', $to, $this->vars($lead), $lead->id, $this->adminLayout($lead));
+        }
+        foreach (self::adminPhones() as $phone) {
+            $this->sendSms('lead.admin_sms', $phone, $this->vars($lead), $lead->id);
+        }
+    }
+
+    /** Cerere atribuită unui atelier: atelierul (SMS + email) și clientul (SMS + email). */
+    public function notifyAssigned(Lead $lead, Provider $provider): void
+    {
+        $this->notifyProviderAssigned($lead, $provider);
+
+        $vars = $this->vars($lead, $provider);
+        if ($lead->phone) {
+            $this->sendSms('lead.customer_assigned_sms', $lead->phone, $vars, $lead->id);
+        }
+        if ($lead->email) {
+            $this->sendEmail('lead.customer_assigned_email', $lead->email, $vars, $lead->id, [
+                'kicker' => 'Atelier găsit',
+                'title' => 'Am găsit un atelier partener pentru mașina ta',
+                'reference' => $lead->reference,
+                'rows' => array_values(array_filter([
+                    ['Atelier partener', (string) ($provider->company_name ?? '')],
+                    ['Mașina', trim(($lead->vehicle_brand ?? '').' '.($lead->vehicle_model ?? '').' '.($lead->vehicle_year ?? ''))],
+                    ['Localitate', (string) optional($lead->city)->name],
+                ], fn ($r) => trim($r[1]) !== '')),
+                'buttons' => [['Vezi cum funcționează', $this->url('/#cum-functioneaza'), true]],
+                'note' => 'Atelierul te contactează în curând cu oferta și propunerea de programare. Nu ai nicio obligație să accepți oferta.',
+            ]);
+        }
+    }
+
+    /** Clientului îi comunicăm doar pașii care îl privesc. */
+    public const CUSTOMER_STATUS_MESSAGES = [
+        'contactat' => 'Atelierul partener a preluat cererea și te-a contactat (sau te contactează în curând).',
+        'programata' => 'Montajul a fost programat. Dacă trebuie să schimbi ora, anunță atelierul cât mai devreme.',
+        'finalizata' => 'Lucrarea a fost finalizată. Respectă timpul de uscare a adezivului indicat de tehnician și evită spălătoriile cu jet în primele zile.',
+        'anulata' => 'Cererea a fost anulată. Dacă ai în continuare nevoie de un parbriz, poți trimite oricând o cerere nouă.',
+    ];
+
+    /**
+     * Schimbare de status: clientul (pașii importanți), adminul (orice schimbare făcută de atelier)
+     * și atelierul (dacă adminul anulează o cerere atribuită lui).
+     */
+    public function notifyStatusChanged(Lead $lead, ?string $from, string $to, ?\App\Models\User $by = null): void
+    {
+        if ($from === $to || $to === 'atribuita') {
+            return; // atribuirea are notificările ei
+        }
+        $vars = $this->vars($lead, $lead->assignedProvider);
+        $vars['status'] = \App\Support\LeadStatus::label($to);
+        $vars['status_old'] = \App\Support\LeadStatus::label($from);
+        $vars['status_message'] = self::CUSTOMER_STATUS_MESSAGES[$to] ?? '';
+
+        // Clientul
+        if (isset(self::CUSTOMER_STATUS_MESSAGES[$to])) {
+            if ($lead->phone) {
+                $this->sendSms('lead.customer_status_sms', $lead->phone, $vars, $lead->id);
+            }
+            if ($lead->email) {
+                $this->sendEmail('lead.customer_status_email', $lead->email, $vars, $lead->id, [
+                    'kicker' => 'Actualizare cerere',
+                    'title' => 'Cererea ta: '.mb_strtolower($vars['status']),
+                    'reference' => $lead->reference,
+                    'rows' => $this->leadRows($lead, false),
+                    'buttons' => $to === 'anulata'
+                        ? [['Trimite o cerere nouă', $this->url('/cerere-oferta'), true]]
+                        : [['Ghiduri despre parbriz', $this->url('/blog'), false]],
+                    'note' => $vars['status_message'],
+                ]);
+            }
+        }
+
+        // Adminul: schimbările făcute de atelier (din portal)
+        $byProvider = (bool) $by?->isProvider();
+        if ($byProvider) {
+            foreach (self::adminRecipients() as $email) {
+                $this->sendEmail('lead.admin_status_email', $email, $vars, $lead->id, [
+                    'kicker' => $to === 'refuzata' ? 'Atelierul a refuzat' : 'Status actualizat',
+                    'title' => ($vars['provider_name'] ?: 'Atelierul').': '.$vars['status_old'].' → '.$vars['status'],
+                    'reference' => $lead->reference,
+                    'rows' => $this->leadRows($lead, true),
+                    'buttons' => [['Deschide cererea în admin', $this->url('/admin/leads/'.$lead->id.'/edit'), true]],
+                    'note' => $to === 'refuzata' ? 'Cererea trebuie atribuită altui atelier partener.' : null,
+                ]);
+            }
+            if ($to === 'refuzata') {
+                foreach (self::adminPhones() as $phone) {
+                    $this->sendSms('lead.admin_status_sms', $phone, $vars, $lead->id);
+                }
+            }
+        }
+
+        // Atelierul: adminul a anulat cererea atribuită
+        if (! $byProvider && $to === 'anulata' && $lead->assignedProvider) {
+            $p = $lead->assignedProvider;
+            $phone = $p->phone ?: optional($p->user)->phone;
+            $email = $p->email ?: optional($p->user)->email;
+            if ($phone) {
+                $this->sendSms('lead.provider_status_sms', $phone, $vars, $lead->id);
+            }
+            if ($email) {
+                $this->sendEmail('lead.provider_status_email', $email, $vars, $lead->id, [
+                    'kicker' => 'Cerere anulată',
+                    'title' => 'Cererea '.$lead->reference.' a fost anulată',
+                    'reference' => $lead->reference,
+                    'rows' => $this->leadRows($lead, false),
+                    'buttons' => [['Deschide portalul', $this->url('/portal/leads'), true]],
+                    'note' => 'Nu mai este nevoie să contactezi clientul pentru această cerere.',
+                ]);
+            }
         }
     }
 
@@ -243,10 +361,17 @@ class LeadNotifier
         $lead = $this->sampleLead();
         $vars = $this->vars($lead);
         $vars['provider_name'] = 'Atelier Exemplu';
+        $vars['status'] = 'Programată';
+        $vars['status_old'] = 'Atribuită';
+        $vars['status_message'] = self::CUSTOMER_STATUS_MESSAGES['programata'];
         $layout = match ($key) {
             'lead.admin_email' => $this->adminLayout($lead),
             'lead.provider_email' => $this->providerLayout($lead),
             'lead.customer_email' => $this->customerLayout($lead),
+            'lead.customer_assigned_email' => ['kicker' => 'Atelier găsit', 'title' => 'Am găsit un atelier partener pentru mașina ta', 'rows' => [['Atelier partener', 'Atelier Exemplu'], ['Mașina', 'Dacia Duster 2021']], 'buttons' => [['Vezi cum funcționează', $this->url('/#cum-functioneaza'), true]], 'note' => 'Atelierul te contactează în curând cu oferta și propunerea de programare.'],
+            'lead.customer_status_email' => ['kicker' => 'Actualizare cerere', 'title' => 'Cererea ta: programată', 'rows' => $this->leadRows($lead, false), 'buttons' => [['Ghiduri despre parbriz', $this->url('/blog'), false]], 'note' => self::CUSTOMER_STATUS_MESSAGES['programata']],
+            'lead.admin_status_email' => ['kicker' => 'Status actualizat', 'title' => 'Atelier Exemplu: Atribuită → Programată', 'rows' => $this->leadRows($lead, true), 'buttons' => [['Deschide cererea în admin', $this->url('/admin/leads/42/edit'), true]]],
+            'lead.provider_status_email' => ['kicker' => 'Cerere anulată', 'title' => 'Cererea a fost anulată', 'rows' => $this->leadRows($lead, false), 'buttons' => [['Deschide portalul', $this->url('/portal/leads'), true]], 'note' => 'Nu mai este nevoie să contactezi clientul pentru această cerere.'],
             default => ['title' => 'Notificare', 'rows' => $this->leadRows($lead, true), 'buttons' => []],
         };
 

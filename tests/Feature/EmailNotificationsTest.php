@@ -60,4 +60,41 @@ class EmailNotificationsTest extends TestCase
         SiteSetting::setValue('smtp', ['admin_notify_to' => 'a@x.ro, b@y.ro; invalid']);
         $this->assertSame(['a@x.ro', 'b@y.ro'], LeadNotifier::adminRecipients());
     }
+
+    public function test_all_channels_on_assignment_and_status_changes(): void
+    {
+        $this->seed();
+        config(['mail.default' => 'array']);
+        SiteSetting::setValue('smtp', array_merge((array) SiteSetting::getValue('smtp', []), ['enabled' => true, 'host' => '']));
+        SiteSetting::setValue('smso', ['enabled' => false, 'admin_phone' => '0722 111 222']);
+
+        $providerUser = \App\Models\User::factory()->create(['role' => \App\Models\User::ROLE_PROVIDER, 'is_active' => true, 'email' => 'atelier@example.com']);
+        $provider = \App\Models\Provider::query()->create(['user_id' => $providerUser->id, 'company_name' => 'Atelier Test', 'email' => 'atelier@example.com', 'phone' => '0733000000', 'status' => 'active']);
+        $lead = Lead::query()->create(['customer_name' => 'Ana', 'phone' => '0744111222', 'email' => 'ana@example.com', 'status' => 'noua']);
+
+        app(\App\Services\LeadWorkflow::class)->assign($lead, $provider->id, null);
+        $to = collect($this->sentMessages())->map(fn ($m) => $m->getOriginalMessage()->getTo()[0]->getAddress())->all();
+        $this->assertContains('atelier@example.com', $to);
+        $this->assertContains('ana@example.com', $to);
+
+        // SMS-urile sunt jurnalizate (SMSO dezactivat aici → „skipped”, dar încercate)
+        $smsKeys = \App\Models\NotificationLog::query()->where('channel', 'sms')->pluck('template_key')->all();
+        $this->assertContains('lead.provider_sms', $smsKeys);
+        $this->assertContains('lead.customer_assigned_sms', $smsKeys);
+
+        // Atelierul schimbă statusul → client + admin
+        app(\App\Services\LeadWorkflow::class)->changeStatus($lead->fresh(), 'programata', $providerUser->id);
+        $keys = \App\Models\NotificationLog::query()->pluck('template_key')->all();
+        $this->assertContains('lead.customer_status_sms', $keys);
+        $this->assertContains('lead.customer_status_email', $keys);
+        $this->assertContains('lead.admin_status_email', $keys);
+
+        // Atelierul refuză → SMS admin
+        app(\App\Services\LeadWorkflow::class)->changeStatus($lead->fresh(), 'refuzata', $providerUser->id);
+        $this->assertTrue(\App\Models\NotificationLog::query()->where('template_key', 'lead.admin_status_sms')->where('recipient', '0722 111 222')->exists());
+
+        // Cerere nouă → SMS admin
+        app(LeadNotifier::class)->notifyAdminNewLead($lead->fresh());
+        $this->assertTrue(\App\Models\NotificationLog::query()->where('template_key', 'lead.admin_sms')->exists());
+    }
 }

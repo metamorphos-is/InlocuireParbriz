@@ -90,6 +90,7 @@ class SiteSettings extends Page implements HasSchemas
                 'enabled' => (bool) ($smso['enabled'] ?? false),
                 'api_key' => '', // mascat
                 'sender' => $smso['sender'] ?? '',
+                'admin_phone' => $smso['admin_phone'] ?? '',
             ],
             'seo' => [
                 'noindex' => (bool) ($seo['noindex'] ?? true),
@@ -180,6 +181,12 @@ class SiteSettings extends Page implements HasSchemas
                                 ? 'Cheie salvată (mascată). Lasă gol pentru a o păstra.'
                                 : 'Nicio cheie salvată.'),
                         TextInput::make('smso.sender')->label('Expeditor SMS')->maxLength(30),
+                        TextInput::make('smso.admin_phone')
+                            ->label('Telefon pentru SMS „cerere nouă” (admin)')
+                            ->helperText('Primești SMS la fiecare cerere nouă și când un atelier refuză o cerere. Mai multe numere: separă-le prin virgulă. Gol = fără SMS pentru admin.')
+                            ->placeholder('07xx xxx xxx')
+                            ->maxLength(120)
+                            ->columnSpanFull(),
                     ]),
                 Section::make('SEO')
                     ->schema([

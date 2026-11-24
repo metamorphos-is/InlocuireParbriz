@@ -50,5 +50,14 @@ class EditLead extends EditRecord
                 'payload' => ['from' => $lead->getPrevious()['status'] ?? null, 'to' => $lead->status],
             ]);
         }
+
+        // Notificări (SMS + email) — aceleași ca în fluxul de atribuire / schimbare status.
+        $notifier = app(\App\Services\Notifications\LeadNotifier::class);
+        if ($lead->wasChanged('assigned_provider_id') && $lead->assigned_provider_id && ($provider = \App\Models\Provider::query()->find($lead->assigned_provider_id))) {
+            rescue(fn () => $notifier->notifyAssigned($lead->fresh(), $provider), report: true);
+        }
+        if ($lead->wasChanged('status')) {
+            rescue(fn () => $notifier->notifyStatusChanged($lead->fresh(), $lead->getPrevious()['status'] ?? null, $lead->status, auth()->user()), report: true);
+        }
     }
 }
