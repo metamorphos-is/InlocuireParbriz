@@ -128,6 +128,11 @@
     }
 
     document.querySelectorAll('[data-lead-form]').forEach(function (form) {
+        // Antispam: tokenul JS se completează doar după o interacțiune reală (sau la trimitere).
+        var js = form.querySelector('[data-js-token]');
+        var arm = function () { if (js) js.value = js.getAttribute('data-js-token'); };
+        ['keydown', 'pointerdown', 'touchstart', 'focusin'].forEach(function (ev) { form.addEventListener(ev, arm, { once: true, passive: true }); });
+        form.addEventListener('submit', arm);
         var area = form.querySelector('[data-area-type]');
         if (area) {
             area.addEventListener('change', function () { syncArea(form); });

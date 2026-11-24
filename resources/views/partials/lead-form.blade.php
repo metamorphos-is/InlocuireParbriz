@@ -1,15 +1,23 @@
 @php
     $selectedCategory = old('category', $selected ?? request('serviciu'));
     $compact = $compact ?? false;
+    $formToken = \App\Support\SpamGuard::token();
     $area = old('area_type', in_array(request('zona'), ['bucuresti', 'ilfov', 'alt_oras'], true) ? request('zona') : 'bucuresti');
 @endphp
 <form method="POST" action="{{ route('lead.store') }}" class="ee-form @if($compact) ee-form--compact @endif" novalidate data-lead-form>
     @csrf
 
+    {{-- Antispam: capcane invizibile + token de timp + token JS (vezi App\Support\SpamGuard) --}}
     <div class="ee-hp" aria-hidden="true">
         <label for="website">Nu completa acest câmp</label>
         <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        <label for="company_site">Nu completa</label>
+        <input type="text" id="company_site" name="company_site" tabindex="-1" autocomplete="off">
+        <label for="fax">Fax</label>
+        <input type="text" id="fax" name="fax" tabindex="-1" autocomplete="off">
     </div>
+    <input type="hidden" name="_ft" value="{{ $formToken }}">
+    <input type="hidden" name="_js" value="" data-js-token="ok-{{ substr(hash('sha256', $formToken), 0, 12) }}">
 
     @if ($errors->any())
         <div class="ee-alert ee-alert--error" role="alert">
@@ -173,4 +181,10 @@
             </div>
         </div>
     </fieldset>
+    @if ($turnstileKey = \App\Support\SpamGuard::turnstileSiteKey())
+        <div class="cf-turnstile mt-3" data-sitekey="{{ $turnstileKey }}" data-language="ro"></div>
+        @once
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        @endonce
+    @endif
 </form>

@@ -37,7 +37,23 @@ class LeadController extends Controller
         $locationTypes = array_keys(config('inlocuireparbriz.location_types'));
         $featureKeys = array_merge(array_keys(config('inlocuireparbriz.glass_features')), ['nu_stiu']);
 
-        if (filled($request->input('website'))) {
+        // Antispam (App\Support\SpamGuard): boții primesc pagina de „mulțumim”, dar cererea nu se salvează.
+        if ($verdict = \App\Support\SpamGuard::check($request)) {
+            if (str_starts_with($verdict, 'error:')) {
+                [$field, $message] = explode('|', substr($verdict, 6), 2);
+
+                return back()->withErrors([$field => $message])->withInput();
+            }
+            \App\Support\SpamGuard::record(substr($verdict, 7), $request);
+
+            return redirect()->route('lead.thanks');
+        }
+        $request->merge(['phone' => \App\Support\SpamGuard::phone($request)]);
+
+        // Aceeași persoană a mai trimis în ultimele 30 de minute → nu dublăm cererea și notificările.
+        if (Schema::hasTable('leads') && Lead::query()->where('phone', $request->input('phone'))->where('created_at', '>=', now()->subMinutes(30))->exists()) {
+            \App\Support\SpamGuard::record('duplicat', $request);
+
             return redirect()->route('lead.thanks');
         }
 

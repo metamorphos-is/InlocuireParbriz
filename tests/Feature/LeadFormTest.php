@@ -14,7 +14,10 @@ class LeadFormTest extends TestCase
 
     private function payload(array $over = []): array
     {
+        $ft = \Illuminate\Support\Facades\Crypt::encryptString((string) (time() - 30));
+
         return array_merge([
+            '_ft' => $ft, '_js' => 'ok-'.substr(hash('sha256', $ft), 0, 12),
             'name' => 'Ion Popescu', 'phone' => '0722 123 456', 'email' => 'ion@example.com',
             'category' => 'inlocuire-parbriz-bucuresti', 'area_type' => 'bucuresti', 'sector' => 3,
             'description' => 'Parbriz fisurat pe partea șoferului', 'vehicle_brand' => 'Dacia',

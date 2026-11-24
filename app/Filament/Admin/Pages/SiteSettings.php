@@ -86,6 +86,11 @@ class SiteSettings extends Page implements HasSchemas
                 'from_name' => $smtp['from_name'] ?? 'inlocuireparbriz.ro',
                 'admin_notify_to' => $smtp['admin_notify_to'] ?? \App\Services\Notifications\LeadNotifier::DEFAULT_ADMIN_EMAIL,
             ],
+            'antispam' => [
+                'turnstile_enabled' => (bool) (((array) SiteSetting::getValue('antispam', []))['turnstile_enabled'] ?? false),
+                'turnstile_site_key' => (string) (((array) SiteSetting::getValue('antispam', []))['turnstile_site_key'] ?? ''),
+                'turnstile_secret' => '',
+            ],
             'smso' => [
                 'enabled' => (bool) ($smso['enabled'] ?? false),
                 'api_key' => '', // mascat
@@ -188,6 +193,32 @@ class SiteSettings extends Page implements HasSchemas
                             ->maxLength(120)
                             ->columnSpanFull(),
                     ]),
+                Section::make('Antispam (formularul de cerere)')
+                    ->description('Activ mereu: capcane invizibile pentru roboți, timp minim de completare, verificare JavaScript, blocare linkuri și alfabete străine, telefon românesc valid, limită de cereri pe IP/telefon și fără duplicate în 30 de minute.')
+                    ->collapsed()
+                    ->columns(2)
+                    ->schema([
+                        \Filament\Schemas\Components\Html::make(function () {
+                            $stats = \App\Support\SpamGuard::stats(14);
+                            if (! $stats) {
+                                return new \Illuminate\Support\HtmlString('<p style="font-size:.9rem">Nicio cerere blocată în ultimele 14 zile.</p>');
+                            }
+                            $labels = ['honeypot' => 'capcană', 'token-lipsa' => 'fără token', 'prea-rapid' => 'prea rapid', 'fara-js' => 'fără JavaScript', 'link' => 'linkuri', 'alfabet' => 'alfabet străin', 'limita-ip' => 'prea multe de pe același IP', 'limita-telefon' => 'prea multe pe același telefon', 'duplicat' => 'duplicat'];
+                            $rows = collect($stats)->map(fn ($r, $d) => '<li><strong>'.e($d).'</strong>: '.e(collect($r)->map(fn ($n, $k) => ($labels[$k] ?? $k).' '.$n)->implode(', ')).'</li>')->implode('');
+
+                            return new \Illuminate\Support\HtmlString('<p style="font-size:.9rem;margin:0 0 .3rem;font-weight:600">Cereri blocate (ultimele 14 zile):</p><ul style="font-size:.9rem;margin:0;padding-left:1.2rem">'.$rows.'</ul>');
+                        })->columnSpanFull(),
+                        Toggle::make('antispam.turnstile_enabled')
+                            ->label('Cloudflare Turnstile (verificare anti-robot invizibilă, opțional)')
+                            ->helperText('Gratuit. Creezi cheile în contul Cloudflare → Turnstile, pentru domeniul inlocuireparbriz.ro. Activează doar dacă mai primești spam.')
+                            ->columnSpanFull(),
+                        TextInput::make('antispam.turnstile_site_key')->label('Site key')->maxLength(100),
+                        TextInput::make('antispam.turnstile_secret')
+                            ->label('Secret key')
+                            ->password()
+                            ->autocomplete('new-password')
+                            ->helperText(SettingSecret::isSet(((array) SiteSetting::getValue('antispam', []))['turnstile_secret'] ?? null) ? 'Cheie salvată (mascată). Lasă gol pentru a o păstra.' : 'Nicio cheie salvată.'),
+                    ]),
                 Section::make('SEO')
                     ->schema([
                         Toggle::make('seo.noindex')
@@ -251,6 +282,13 @@ class SiteSettings extends Page implements HasSchemas
         SiteSetting::setValue('brand', array_merge($oldBrand, $state['brand']));
         SiteSetting::setValue('smtp', array_merge($oldSmtp, $smtp));
         SiteSetting::setValue('smso', array_merge($oldSmso, $smso));
+        $oldAnti = (array) SiteSetting::getValue('antispam', []);
+        $anti = $state['antispam'] ?? [];
+        SiteSetting::setValue('antispam', array_merge($oldAnti, [
+            'turnstile_enabled' => (bool) ($anti['turnstile_enabled'] ?? false),
+            'turnstile_site_key' => trim((string) ($anti['turnstile_site_key'] ?? '')),
+            'turnstile_secret' => filled($anti['turnstile_secret'] ?? null) ? SettingSecret::protect(trim($anti['turnstile_secret'])) : ($oldAnti['turnstile_secret'] ?? ''),
+        ]));
         SiteSetting::setValue('seo', array_merge($oldSeo, [
             'noindex' => (bool) $state['seo']['noindex'],
             'default_robots' => $state['seo']['noindex'] ? 'noindex,nofollow' : 'index,follow',

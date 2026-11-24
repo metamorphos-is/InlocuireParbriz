@@ -59,3 +59,7 @@ Proiectul e lucrat de mai mulți asistenți AI. Ca să nu ne călcăm pe picioar
 - Numele site-ului se scrie `inlocuireparbriz.ro` (titluri: „… | inlocuireparbriz.ro”). Testul `tests/Feature/TitleCaseTest.php` verifică automat.
 - Favicon: `public/assets/img/favicon.svg` + `public/favicon.ico` (parbriz portocaliu pe fond închis).
 - Indexarea se pornește dintr-un singur loc: admin → Setări site → SEO → „noindex” (meta, `X-Robots-Tag` și `/robots.txt` urmează comutatorul). Redirecționările stau în tabela `redirects` (middleware `HandleRedirects`).
+
+## 8. Antispam la cereri (24.11.2026)
+- `App\Support\SpamGuard`: honeypot (`website`, `company_site`, `fax`), token de timp `_ft` (min. 4 s), token JS `_js`, blocare linkuri/alfabete străine, telefon RO valid (normalizat `07xxxxxxxx`), limite pe IP/telefon, fără duplicate în 30 min. Boții primesc „mulțumim” fără să se salveze nimic.
+- Orice formular nou de cerere trebuie să includă `partials/lead-form` (are deja tokenurile). Cloudflare Turnstile e opțional, din admin → Setări site → Antispam.
