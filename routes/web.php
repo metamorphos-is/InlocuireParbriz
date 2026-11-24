@@ -16,7 +16,7 @@ Route::get('/robots.txt', function () {
         ? ['User-agent: *', 'Disallow: /']
         : ['User-agent: *', 'Disallow: /admin', 'Disallow: /portal', 'Disallow: /cerere-oferta/multumim', '', 'Sitemap: '.url('/sitemap.xml')];
 
-    return response(implode("\n", $lines)."\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+    return response(implode("\n", $lines)."\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8', 'Cache-Control' => 'public, max-age=300']);
 })->name('robots');
 
 $seoSlugs = [
