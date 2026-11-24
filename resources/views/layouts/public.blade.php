@@ -11,11 +11,23 @@
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
     <meta property="og:locale" content="ro_RO">
-    <meta property="og:type" content="website">
+    @php
+        $ogImg = \App\Support\Img::get(trim($__env->yieldContent('og_image')) ?: (\App\Support\Img::forPath(request()->path())[0] ?? \App\Support\Img::DEFAULT));
+    @endphp
+    <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:site_name" content="inlocuireparbriz.ro">
     <meta property="og:title" content="@yield('title', 'Înlocuire parbriz în toată țara | inlocuireparbriz.ro')">
     <meta property="og:description" content="@yield('description', 'Înlocuire, schimbare și montaj parbriz prin ateliere partenere verificate din orașul tău.')">
     <meta property="og:url" content="{{ url()->current() }}">
+    @if ($ogImg)
+    <meta property="og:image" content="{{ $ogImg['og'] }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ $ogImg['alt'] }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{{ $ogImg['og'] }}">
+    <link rel="image_src" href="{{ $ogImg['og'] }}">
+    @endif
     <meta name="theme-color" content="#0F2A4A">
 
     <link rel="icon" type="image/svg+xml" href="{{ asset('assets/img/favicon.svg') }}?v=2">

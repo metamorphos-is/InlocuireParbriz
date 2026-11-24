@@ -64,6 +64,9 @@ class CityResource extends Resource
                     TextInput::make('sort_order')->label('Ordine')->numeric()->default(100),
                     Toggle::make('is_active')->label('Activ (acceptă cereri)')->default(true),
                     Toggle::make('is_published')->label('Pagină publicată pe site')->default(false),
+                    Select::make('image')->label('Imagine principală (și thumbnail Google)')
+                        ->options(fn () => \App\Support\Img::options())->searchable()
+                        ->placeholder('Automat (diferită de orașele vecine)')->columnSpanFull(),
                 ]),
                 Tab::make('SEO')->columns(2)->schema([
                     TextInput::make('primary_keyword')->label('Cuvânt-cheie principal')->maxLength(120)

@@ -2,6 +2,9 @@
 
 @section('title', $meta['title'])
 @section('description', $meta['description'])
+@php
+    $pageImgs = \App\Support\Img::forPath(request()->path());
+@endphp
 
 @section('content')
 @php
@@ -16,11 +19,20 @@
             <span>/</span>
             <span>{{ $meta['h1'] }}</span>
         </nav>
-        <h1>{{ $meta['h1'] }}</h1>
-        <p class="ee-lead">{{ $page['intro'] ?? $meta['description'] }}</p>
-        <div class="ee-hero__actions">
-            <a href="{{ $slug === 'despre-noi' ? route('lead.create') : route('lead.create', ['serviciu' => $slug]) }}" class="ee-btn ee-btn--amber ee-btn--lg">{{ $cta[0] }}</a>
-            <a href="{{ route('lead.create') }}" class="ee-btn ee-btn--ghost ee-btn--lg">Trimite detaliile mașinii</a>
+        <div class="row g-4 g-lg-5 align-items-center">
+            <div class="{{ $pageImgs ? 'col-lg-7' : 'col-12' }}">
+                <h1>{{ $meta['h1'] }}</h1>
+                <p class="ee-lead">{{ $page['intro'] ?? $meta['description'] }}</p>
+                <div class="ee-hero__actions">
+                    <a href="{{ $slug === 'despre-noi' ? route('lead.create') : route('lead.create', ['serviciu' => $slug]) }}" class="ee-btn ee-btn--amber ee-btn--lg">{{ $cta[0] }}</a>
+                    <a href="{{ route('lead.create') }}" class="ee-btn ee-btn--ghost ee-btn--lg">Trimite detaliile mașinii</a>
+                </div>
+            </div>
+            @if ($pageImgs)
+                <div class="col-lg-5">
+                    @include('partials.photo', ['slug' => $pageImgs[0], 'eager' => true, 'class' => 'ip-photo--hero', 'sizes' => '(min-width: 992px) 520px, 100vw'])
+                </div>
+            @endif
         </div>
     </div>
 </section>
@@ -29,7 +41,7 @@
     <div class="container">
         <div class="row g-5">
             <div class="col-lg-8">
-                <div class="ee-prose">
+                <div class="ee-prose ip-prose">
                     @if (! empty($page['items']))
                         <h2>Ce include serviciul</h2>
                         <ul>
@@ -39,9 +51,15 @@
                         </ul>
                     @endif
 
-                    @foreach ($page['sections'] ?? [] as [$heading, $body])
+                    @foreach ($page['sections'] ?? [] as $si => [$heading, $body])
                         <h2>{{ $heading }}</h2>
                         <p>{{ $body }}</p>
+                        @if ($si === 0 && isset($pageImgs[1]))
+                            @include('partials.photo', ['slug' => $pageImgs[1], 'class' => 'ip-photo--inline', 'sizes' => '(min-width: 992px) 760px, 100vw', 'caption' => \App\Support\Img::get($pageImgs[1])['alt']])
+                        @endif
+                        @if ($si === 2 && isset($pageImgs[2]))
+                            @include('partials.photo', ['slug' => $pageImgs[2], 'class' => 'ip-photo--inline', 'sizes' => '(min-width: 992px) 760px, 100vw', 'caption' => \App\Support\Img::get($pageImgs[2])['alt']])
+                        @endif
                     @endforeach
 
                     @if (($page['show_sectors'] ?? false) && ($sectors ?? collect())->isNotEmpty())

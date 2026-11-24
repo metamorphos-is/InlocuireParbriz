@@ -29,7 +29,7 @@ class City extends Model
     protected $fillable = [
         'name', 'slug', 'county', 'is_active', 'region', 'coverage', 'is_published', 'sort_order',
         'primary_keyword', 'secondary_keywords', 'search_volume', 'seo_title', 'meta_description',
-        'h1', 'intro', 'areas', 'sections', 'faq',
+        'h1', 'intro', 'areas', 'sections', 'faq', 'image',
     ];
 
     protected function casts(): array

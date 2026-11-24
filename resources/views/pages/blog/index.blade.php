@@ -34,7 +34,8 @@
         @else
             <div class="ip-post-grid">
                 @foreach ($posts as $post)
-                    <article class="ip-post-card">
+                    <article class="ip-post-card ip-post-card--img">
+                        @include('partials.photo', ['slug' => \App\Support\Img::forPost($post), 'class' => 'ip-post-card__photo', 'sizes' => '(min-width: 992px) 33vw, 100vw', 'eager' => $loop->first])
                         <p class="ip-post-card__meta">{{ $post->categoryLabel() }} · {{ $post->readingMinutes() }} min de citit</p>
                         <h2 class="ip-post-card__title"><a href="{{ $post->url() }}">{{ $post->title }}</a></h2>
                         <p class="ip-post-card__excerpt">{{ $post->excerpt }}</p>

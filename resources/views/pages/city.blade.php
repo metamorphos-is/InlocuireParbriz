@@ -2,6 +2,10 @@
 
 @section('title', $city->seo_title ?: "Înlocuire parbriz {$city->name} | inlocuireparbriz.ro")
 @section('description', $city->meta_description ?: $city->intro)
+@php
+    [$heroImg, $secondImg] = \App\Support\Img::forCity($city, (int) $city->sort_order);
+@endphp
+@section('og_image', $heroImg)
 
 @section('content')
 @php
@@ -40,20 +44,21 @@
                     <a href="{{ $leadUrl }}" class="ip-btn ip-btn--cta ip-btn--lg" data-track="cta_city">Cere ofertă pentru {{ $city->name }}</a>
                     <a href="#cum-functioneaza" class="ip-btn ip-btn--ghost ip-btn--lg">Cum funcționează</a>
                 </div>
+                <p class="ip-coverage-note {{ $active ? 'is-active' : '' }}">
+                    @include('partials.icon', ['name' => $active ? 'check' : 'info', 'size' => 18])
+                    @if ($active)
+                        Ateliere partenere active în {{ $city->name }}: primești oferta și montajul în zona ta.
+                    @else
+                        Disponibilitate confirmată la cerere: îți spunem dacă un atelier partener din {{ $city->name }} preia lucrarea, înainte de orice angajament.
+                    @endif
+                </p>
             </div>
-            <aside class="ip-coverage {{ $active ? 'is-active' : '' }}">
-                <span class="ip-coverage__icon">@include('partials.icon', ['name' => $active ? 'check' : 'info', 'size' => 22])</span>
-                <div>
-                    <p class="ip-coverage__title">{{ $active ? 'Ateliere partenere active în '.$city->name : 'Disponibilitate confirmată la cerere' }}</p>
-                    <p class="ip-coverage__text">
-                        @if ($active)
-                            Primești oferta și montajul prin atelierele partenere verificate din zona ta.
-                        @else
-                            Trimite cererea, iar noi îți confirmăm disponibilitatea unui atelier partener în {{ $city->name }} înainte de orice angajament.
-                        @endif
-                    </p>
-                </div>
-            </aside>
+            @include('partials.photo', [
+                'slug' => $heroImg,
+                'eager' => true,
+                'class' => 'ip-photo--hero',
+                'alt' => \App\Support\Img::get($heroImg)['alt'].' – înlocuire parbriz '.$city->name,
+            ])
         </div>
     </div>
 </section>
@@ -62,10 +67,13 @@
     <div class="container">
         <div class="row g-5">
             <div class="col-lg-8">
-                <div class="ee-prose">
-                    @foreach ((array) $city->sections as $section)
+                <div class="ee-prose ip-prose">
+                    @foreach ((array) $city->sections as $i => $section)
                         <h2>{{ $section['heading'] ?? '' }}</h2>
                         <p>{{ $section['body'] ?? '' }}</p>
+                        @if ($i === 0)
+                            @include('partials.photo', ['slug' => $secondImg, 'class' => 'ip-photo--inline', 'sizes' => '(min-width: 992px) 760px, 100vw', 'caption' => \App\Support\Img::get($secondImg)['alt']])
+                        @endif
                     @endforeach
 
                     @if (! empty($city->areas))

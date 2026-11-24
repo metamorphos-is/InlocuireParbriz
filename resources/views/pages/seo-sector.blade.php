@@ -2,6 +2,12 @@
 
 @section('title', $meta['title'])
 @section('description', $meta['description'])
+@php
+    $heroes = config('images.city_heroes');
+    $sectorImg = $heroes[($n * 3 + 1) % count($heroes)];
+    $sectorImg2 = config('images.city_secondary')[$n % count(config('images.city_secondary'))];
+@endphp
+@section('og_image', $sectorImg)
 
 @section('content')
 @php
@@ -17,11 +23,18 @@
             <span>/</span>
             <span>Sector {{ $n }}</span>
         </nav>
-        <h1>Înlocuire parbriz Sector {{ $n }}</h1>
-        <p class="ee-lead">{{ $local['intro'] ?? "Servicii de schimbare parbriz în Sectorul {$n} din București — inclusiv montaj la domiciliu, când condițiile de lucru sunt potrivite." }}</p>
-        <div class="ee-hero__actions">
-            <a href="{{ route('lead.create', ['sector' => $n]) }}" class="ee-btn ee-btn--amber ee-btn--lg">Solicită înlocuire parbriz Sector {{ $n }}</a>
-            <a href="{{ route('lead.create', ['sector' => $n]) }}" class="ee-btn ee-btn--ghost ee-btn--lg">Trimite detaliile mașinii</a>
+        <div class="row g-4 g-lg-5 align-items-center">
+            <div class="col-lg-7">
+                <h1>Înlocuire parbriz Sector {{ $n }}</h1>
+                <p class="ee-lead">{{ $local['intro'] ?? "Servicii de schimbare parbriz în Sectorul {$n} din București — inclusiv montaj la domiciliu, când condițiile de lucru sunt potrivite." }}</p>
+                <div class="ee-hero__actions">
+                    <a href="{{ route('lead.create', ['sector' => $n]) }}" class="ee-btn ee-btn--amber ee-btn--lg">Cere ofertă pentru Sectorul {{ $n }}</a>
+                    <a href="{{ route('lead.create', ['sector' => $n]) }}" class="ee-btn ee-btn--ghost ee-btn--lg">Trimite detaliile mașinii</a>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                @include('partials.photo', ['slug' => $sectorImg, 'eager' => true, 'class' => 'ip-photo--hero', 'sizes' => '(min-width: 992px) 520px, 100vw', 'alt' => \App\Support\Img::get($sectorImg)['alt'].' – Sectorul '.$n.', București'])
+            </div>
         </div>
     </div>
 </section>
@@ -29,7 +42,7 @@
 <section class="ee-section">
     <div class="container">
         <div class="row g-5">
-            <div class="col-lg-8 ee-prose">
+            <div class="col-lg-8 ee-prose ip-prose">
                 @if ($areas)
                     <h2>Zone din Sectorul {{ $n }}</h2>
                     <p>Lucrăm în cartiere precum <strong>{{ implode(', ', $areas) }}</strong>, în funcție de adresă și de accesul la mașină. Nu avem sediu separat pe sector — ne deplasăm la locația ta când spațiul și vremea permit un montaj corect.</p>
@@ -43,6 +56,8 @@
                     <li><a href="{{ url('/inlocuire-luneta-si-geamuri-laterale') }}">Lunetă și geamuri laterale</a></li>
                     <li><a href="{{ url('/calibrare-adas') }}">Informații despre calibrare ADAS</a>, după caz</li>
                 </ul>
+
+                @include('partials.photo', ['slug' => $sectorImg2, 'class' => 'ip-photo--inline', 'sizes' => '(min-width: 992px) 760px, 100vw', 'caption' => \App\Support\Img::get($sectorImg2)['alt']])
 
                 <h2>Montaj la domiciliu în Sectorul {{ $n }}</h2>
                 <p>{{ $local['local'] ?? 'Pentru montajul mobil avem nevoie de un loc stabil, cu spațiu pentru deschiderea portierelor. Dacă plouă sau spațiul e prea strâmt, propunem un loc acoperit sau o reprogramare.' }}</p>

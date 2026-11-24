@@ -12,6 +12,11 @@
 
 <section class="ee-section">
     <div class="container">
+        <div class="row g-4 mb-2">
+            <div class="col-md-4">@include('partials.photo', ['slug' => 'montaj-parbriz-nou-doi-tehnicieni', 'class' => 'ip-photo--card', 'eager' => true, 'sizes' => '(min-width: 768px) 33vw, 100vw'])</div>
+            <div class="col-md-4">@include('partials.photo', ['slug' => 'reparatie-ciobitura-parbriz-aplicator', 'class' => 'ip-photo--card', 'sizes' => '(min-width: 768px) 33vw, 100vw'])</div>
+            <div class="col-md-4">@include('partials.photo', ['slug' => 'curatare-parbriz-dupa-montaj', 'class' => 'ip-photo--card', 'sizes' => '(min-width: 768px) 33vw, 100vw'])</div>
+        </div>
         @foreach (config('navigation.servicii.groups') as $group)
             <h2 class="ip-section-title">{{ $group['title'] }}</h2>
             <div class="ip-service-grid">

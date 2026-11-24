@@ -130,25 +130,32 @@
 {{-- REPARAȚIE VS ÎNLOCUIRE --}}
 <section class="ee-section ee-section--alt">
     <div class="container">
-        <div class="ip-section-head">
-            <h2 class="ip-section-title">Reparație sau schimbare parbriz?</h2>
-            <p>Nu orice impact înseamnă un parbriz nou — dar nici orice fisură nu se poate repara.</p>
+        <div class="row g-4 g-lg-5 align-items-center">
+            <div class="col-lg-5">
+                @include('partials.photo', ['slug' => 'ciobitura-parbriz-impact-piatra', 'class' => 'ip-photo--hero', 'sizes' => '(min-width: 992px) 480px, 100vw'])
+            </div>
+            <div class="col-lg-7">
+                <div class="ip-section-head">
+                    <h2 class="ip-section-title">Reparație sau schimbare parbriz?</h2>
+                    <p>Nu orice impact înseamnă un parbriz nou — dar nici orice fisură nu se poate repara. O ciobitură mică, prinsă în primele zile, poate fi umplută cu rășină; o fisură lungă sau una care pornește de la margine cere, de regulă, sticlă nouă.</p>
+                </div>
+                @include('partials.compare-blocks', [
+                    'leftTitle' => 'Se poate repara, de obicei',
+                    'rightTitle' => 'Trebuie înlocuit, de regulă',
+                    'leftItems' => [
+                        'Ciobitură mică și recentă',
+                        'Departe de marginea sticlei',
+                        'În afara câmpului de vedere al șoferului',
+                    ],
+                    'rightItems' => [
+                        'Fisură lungă sau care se extinde',
+                        'Impact aproape de margine sau de senzori',
+                        'Mai multe impacturi pe aceeași sticlă',
+                    ],
+                ])
+                <p class="mt-4 mb-0"><a class="ee-link" href="{{ url('/reparatie-parbriz') }}">Află când se poate repara un parbriz →</a></p>
+            </div>
         </div>
-        @include('partials.compare-blocks', [
-            'leftTitle' => 'Se poate repara, de obicei',
-            'rightTitle' => 'Trebuie înlocuit, de regulă',
-            'leftItems' => [
-                'Ciobitură mică și recentă',
-                'Departe de marginea sticlei',
-                'În afara câmpului de vedere al șoferului',
-            ],
-            'rightItems' => [
-                'Fisură lungă sau care se extinde',
-                'Impact aproape de margine sau de senzori',
-                'Mai multe impacturi pe aceeași sticlă',
-            ],
-        ])
-        <p class="mt-4 mb-0"><a class="ee-link" href="{{ url('/reparatie-parbriz') }}">Află când se poate repara un parbriz →</a></p>
     </div>
 </section>
 
@@ -158,6 +165,10 @@
         <div class="ip-section-head">
             <h2 class="ip-section-title">De ce contează dotările la montajul parbrizului</h2>
             <p>Același model de mașină poate avea mai multe variante de parbriz. De aceea cerem datele mașinii înainte de ofertă.</p>
+        </div>
+        <div class="row g-4 align-items-stretch mb-4">
+            <div class="col-md-6">@include('partials.photo', ['slug' => 'parbriz-ploaie-senzor', 'class' => 'ip-photo--card', 'sizes' => '(min-width: 768px) 50vw, 100vw'])</div>
+            <div class="col-md-6">@include('partials.photo', ['slug' => 'montaj-parbriz-nou-doi-tehnicieni', 'class' => 'ip-photo--card', 'sizes' => '(min-width: 768px) 50vw, 100vw'])</div>
         </div>
         <div class="ip-service-grid ip-service-grid--4">
             @foreach ([

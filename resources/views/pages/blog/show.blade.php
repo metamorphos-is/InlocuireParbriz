@@ -2,6 +2,8 @@
 
 @section('title', $post->seo_title ?: $post->title.' | inlocuireparbriz.ro')
 @section('description', $post->meta_description ?: $post->excerpt)
+@section('og_type', 'article')
+@section('og_image', \App\Support\Img::forPost($post))
 
 @section('content')
 @php
@@ -31,7 +33,8 @@
     <div class="container">
         <div class="row g-5">
             <div class="col-lg-8">
-                <article class="ee-prose ip-article">
+                @include('partials.photo', ['slug' => \App\Support\Img::forPost($post), 'eager' => true, 'class' => 'ip-photo--inline ip-photo--article', 'sizes' => '(min-width: 992px) 760px, 100vw'])
+                <article class="ee-prose ip-prose ip-article">
                     {!! $post->html() !!}
                 </article>
 
@@ -78,7 +81,8 @@
         <div class="ip-section-head"><h2 class="ip-section-title">Citește și</h2></div>
         <div class="ip-post-grid">
             @foreach ($related as $r)
-                <article class="ip-post-card">
+                <article class="ip-post-card ip-post-card--img">
+                    @include('partials.photo', ['slug' => \App\Support\Img::forPost($r), 'class' => 'ip-post-card__photo', 'sizes' => '(min-width: 992px) 33vw, 100vw'])
                     <p class="ip-post-card__meta">{{ $r->categoryLabel() }}</p>
                     <h3 class="ip-post-card__title"><a href="{{ $r->url() }}">{{ $r->title }}</a></h3>
                     <p class="ip-post-card__excerpt">{{ $r->excerpt }}</p>
@@ -101,6 +105,7 @@
         [
             '@type' => 'BlogPosting',
             'headline' => $post->title,
+            'image' => \App\Support\Img::get(\App\Support\Img::forPost($post))['og'] ?? null,
             'description' => $post->meta_description ?: $post->excerpt,
             'datePublished' => optional($post->published_at)->toAtomString(),
             'dateModified' => $post->updated_at?->toAtomString(),

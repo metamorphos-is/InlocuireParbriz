@@ -17,7 +17,7 @@ class SitemapController extends Controller
         }
 
         foreach (\App\Models\City::query()->withPublicPage()->orderBy('sort_order')->get() as $city) {
-            $urls[] = ['loc' => $city->url(), 'changefreq' => 'weekly', 'priority' => '0.8'];
+            $urls[] = ['loc' => $city->url(), 'changefreq' => 'weekly', 'priority' => '0.8', 'images' => \App\Support\Img::forCity($city, (int) $city->sort_order)];
         }
 
         foreach (range(1, 6) as $n) {
@@ -29,14 +29,20 @@ class SitemapController extends Controller
         }
 
         $urls[] = ['loc' => route('blog.index'), 'changefreq' => 'weekly', 'priority' => '0.6'];
-        foreach (\App\Models\Post::query()->published()->orderByDesc('published_at')->get(['slug', 'updated_at']) as $post) {
-            $urls[] = ['loc' => $post->url(), 'changefreq' => 'monthly', 'priority' => '0.6'];
+        foreach (\App\Models\Post::query()->published()->orderByDesc('published_at')->get() as $post) {
+            $urls[] = ['loc' => $post->url(), 'changefreq' => 'monthly', 'priority' => '0.6', 'images' => [\App\Support\Img::forPost($post)]];
         }
 
         $urls[] = ['loc' => route('services'), 'changefreq' => 'weekly', 'priority' => '0.8'];
         $urls[] = ['loc' => route('contact'), 'changefreq' => 'monthly', 'priority' => '0.5'];
         $urls[] = ['loc' => route('lead.create'), 'changefreq' => 'monthly', 'priority' => '0.6'];
         $urls[] = ['loc' => url('/despre-noi'), 'changefreq' => 'monthly', 'priority' => '0.4'];
+
+        // Imaginile paginilor fixe (config/images.php) → <image:image>, pentru Google Images.
+        foreach ($urls as &$u) {
+            $u['images'] ??= \App\Support\Img::forPath(parse_url($u['loc'], PHP_URL_PATH) ?: '/');
+        }
+        unset($u);
 
         return response()
             ->view('sitemap', ['urls' => $urls])

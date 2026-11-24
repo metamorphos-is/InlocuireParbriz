@@ -17,7 +17,7 @@ class Post extends Model
 
     protected $fillable = [
         'title', 'slug', 'category', 'excerpt', 'body', 'primary_keyword', 'secondary_keywords',
-        'search_volume', 'seo_title', 'meta_description', 'faq', 'related_service', 'author',
+        'search_volume', 'seo_title', 'meta_description', 'faq', 'related_service', 'author', 'image',
         'is_published', 'published_at',
     ];
 
