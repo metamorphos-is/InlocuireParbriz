@@ -51,7 +51,7 @@
                             </div>
                         </div>
                         <div class="ip-mega__foot">
-                            <div class="container ip-mega__foot-inner">
+                            <div class="ip-mega__foot-inner">
                                 <span>{{ $nav['servicii']['footer']['text'] }}</span>
                                 <a href="{{ url($nav['servicii']['footer']['url']) }}">{{ $nav['servicii']['footer']['cta'] }} @include('partials.icon', ['name' => 'arrow', 'size' => 16])</a>
                             </div>
@@ -109,7 +109,7 @@
                             </a>
                         </div>
                         <div class="ip-mega__foot">
-                            <div class="container ip-mega__foot-inner">
+                            <div class="ip-mega__foot-inner">
                                 <span>Orașul tău nu e în listă? Trimite cererea — îți confirmăm disponibilitatea unui atelier partener.</span>
                                 <a href="{{ url('/cerere-oferta?zona=alt_oras') }}">Cere ofertă @include('partials.icon', ['name' => 'arrow', 'size' => 16])</a>
                             </div>

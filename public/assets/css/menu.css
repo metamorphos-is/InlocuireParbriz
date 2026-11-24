@@ -80,7 +80,7 @@
 .ip-mlink--compact .ip-mlink__icon { width: 34px; height: 34px; }
 
 .ip-mega__foot { background: var(--ip-soft); border-top: 1px solid var(--ip-line); }
-.ip-mega__foot-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 0; color: var(--ip-muted); font-size: .92rem; }
+.ip-mega__foot-inner { max-width: 1240px; margin: 0 auto; padding-left: 24px !important; padding-right: 24px !important; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 0; color: var(--ip-muted); font-size: .92rem; }
 .ip-mega__foot a { display: inline-flex; align-items: center; gap: .35rem; color: var(--ip-blue); font-weight: 700; text-decoration: none; white-space: nowrap; }
 .ip-mega__foot a:hover { text-decoration: underline; }
 
