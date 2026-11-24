@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    // DataForSEO — credențiale DOAR în .env de pe server (sau în Setări site, criptat).
+    'dataforseo' => [
+        'login' => env('DATAFORSEO_LOGIN'),
+        'password' => env('DATAFORSEO_PASSWORD'),
+        'monthly_budget' => (float) env('DATAFORSEO_MONTHLY_BUDGET', 25),
+        'cache_days' => (int) env('DATAFORSEO_CACHE_DAYS', 30),
+    ],
+
 ];

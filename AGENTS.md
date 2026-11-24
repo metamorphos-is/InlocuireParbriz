@@ -26,7 +26,8 @@ Proiectul e lucrat de mai mulți asistenți AI. Ca să nu ne călcăm pe picioar
 - Hostinger **nu rulează scripturile composer** (`post-autoload-dump`). De aceea asset-urile Filament (`public/js|css|fonts/filament`) sunt ținute în Git. După un upgrade Filament: `php artisan filament:assets` local, apoi commit.
 - `composer.json` fixează platforma la PHP 8.3 (`config.platform`), ca pe server. Nu o schimba fără să schimbi și versiunea PHP din hPanel.
 - Operația de deploy poate întoarce HTTP 500 (timeout) deși reușește pe server: așteaptă ~1 minut și verifică fișierele în `site/` înainte s-o repeți.
-- **Migrările** (`php artisan migrate`) nu rulează automat la deploy. Încă nu există un mecanism sigur pentru ele; o migrare nouă trebuie discutată cu proprietarul înainte.
+- **Migrările** rulează automat după deploy prin `app:post-deploy` (scheduler, cron Hostinger `* * * * * php artisan schedule:run`), sau manual din admin → Sistem → **Întreținere** → „Rulează migrările acum”. Migrările trebuie să fie **doar aditive** (fără drop/rename pe coloane cu date) — altfel discută întâi cu proprietarul.
+- Tot ce rulează periodic se definește în `routes/console.php` (versionat), nu direct în cron-ul Hostinger.
 
 ## 3. Secrete
 - Nu pune niciodată în Git: `.env`, `bootstrap/production-settings.php`, `secrets/`, parole, chei API, token-uri.
@@ -36,7 +37,13 @@ Proiectul e lucrat de mai mulți asistenți AI. Ca să nu ne călcăm pe picioar
 ## 4. Interzis pe server
 - Scripturi „one-shot” cu token în clar în `public/` (`setup-once.php`, `install-vendor.php`, `cleanup-temp.php` etc.). Dacă e nevoie de migrări sau comenzi artisan, discută întâi cu proprietarul o soluție sigură.
 
-## 5. Despre proiect
+## 5. DataForSEO
+- Credențiale DOAR pe server: `DATAFORSEO_LOGIN` / `DATAFORSEO_PASSWORD` în `public_html/.env` (sau Setări site → DataForSEO, criptat). Niciodată în cod, Git sau frontend.
+- Cod: `app/Services/DataForSeo/*` (client cu cache 30 zile, plafon lunar, jurnal în `dataforseo_requests`). Planul național: `config/seo-research.php`.
+- Rulare: admin → SEO & Conținut → **Cercetare DataForSEO**, sau `php artisan seo:research --plan=national`. Rezultatele: tabel `seo_keywords` + export `storage/app/seo-research/run-{id}.json`.
+- Nu rula cercetări inutil — costă bani. Verifică întâi cache-ul / rulările existente.
+
+## 6. Despre proiect
 - Laravel 13 + Filament 4 + MySQL. `/admin` (Super Admin), `/portal` (parteneri), site public cu pagini SEO și formularul `/cerere-oferta`.
 - Fațada publică e un site de prezentare: **fără** mențiuni despre marketplace, rețea de parteneri sau alocarea cererilor.
 - Site-ul e `noindex` până când proprietarul spune „lansare”.

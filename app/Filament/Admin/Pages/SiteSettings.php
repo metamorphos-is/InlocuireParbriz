@@ -48,6 +48,7 @@ class SiteSettings extends Page implements HasSchemas
         $smtp = (array) SiteSetting::getValue('smtp', []);
         $smso = (array) SiteSetting::getValue('smso', []);
         $seo = (array) SiteSetting::getValue('seo', []);
+        $dfs = (array) SiteSetting::getValue('dataforseo', []);
 
         $this->form->fill([
             'brand' => [
@@ -73,6 +74,11 @@ class SiteSettings extends Page implements HasSchemas
             'seo' => [
                 'noindex' => (bool) ($seo['noindex'] ?? true),
             ],
+            'dataforseo' => [
+                'login' => $dfs['login'] ?? '',
+                'password' => '', // mascat
+                'monthly_budget' => $dfs['monthly_budget'] ?? config('services.dataforseo.monthly_budget', 25),
+            ],
         ]);
     }
 
@@ -80,6 +86,7 @@ class SiteSettings extends Page implements HasSchemas
     {
         $smtp = (array) SiteSetting::getValue('smtp', []);
         $smso = (array) SiteSetting::getValue('smso', []);
+        $dfs = (array) SiteSetting::getValue('dataforseo', []);
 
         return $schema
             ->components([
@@ -129,6 +136,22 @@ class SiteSettings extends Page implements HasSchemas
                             ->label('Blochează indexarea (noindex) pe tot site-ul')
                             ->helperText('Păstrează activ până la aprobarea lansării.'),
                     ]),
+                Section::make('DataForSEO')
+                    ->description(filled(config('services.dataforseo.login'))
+                        ? 'Credențialele sunt deja setate în .env pe server (au prioritate față de câmpurile de mai jos).'
+                        : 'Alternativă la .env: credențialele se salvează criptat în baza de date.')
+                    ->columns(3)
+                    ->schema([
+                        TextInput::make('dataforseo.login')->label('Login API')->maxLength(190)->autocomplete(false),
+                        TextInput::make('dataforseo.password')
+                            ->label('Parolă API')
+                            ->password()
+                            ->autocomplete('new-password')
+                            ->helperText(SettingSecret::isSet($dfs['password'] ?? null)
+                                ? 'Parolă salvată (mascată). Lasă gol pentru a o păstra.'
+                                : 'Nicio parolă salvată.'),
+                        TextInput::make('dataforseo.monthly_budget')->label('Plafon lunar (USD)')->numeric()->minValue(1)->maxValue(1000),
+                    ]),
             ])
             ->statePath('data');
     }
@@ -141,6 +164,7 @@ class SiteSettings extends Page implements HasSchemas
         $oldSmso = (array) SiteSetting::getValue('smso', []);
         $oldSeo = (array) SiteSetting::getValue('seo', []);
         $oldBrand = (array) SiteSetting::getValue('brand', []);
+        $oldDfs = (array) SiteSetting::getValue('dataforseo', []);
 
         $smtp = $state['smtp'];
         $smtp['password'] = filled($smtp['password'] ?? null)
@@ -151,6 +175,12 @@ class SiteSettings extends Page implements HasSchemas
         $smso['api_key'] = filled($smso['api_key'] ?? null)
             ? SettingSecret::protect($smso['api_key'])
             : ($oldSmso['api_key'] ?? '');
+
+        $dfs = $state['dataforseo'] ?? [];
+        $dfs['password'] = filled($dfs['password'] ?? null)
+            ? SettingSecret::protect($dfs['password'])
+            : ($oldDfs['password'] ?? '');
+        SiteSetting::setValue('dataforseo', array_merge($oldDfs, $dfs));
 
         SiteSetting::setValue('brand', array_merge($oldBrand, $state['brand']));
         SiteSetting::setValue('smtp', array_merge($oldSmtp, $smtp));
