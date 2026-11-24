@@ -113,6 +113,7 @@
                 <select id="area_type" name="area_type" @class(['form-select', 'is-invalid' => $errors->has('area_type')]) required data-area-type>
                     <option value="bucuresti" @selected($area === 'bucuresti')>București</option>
                     <option value="ilfov" @selected($area === 'ilfov')>Ilfov</option>
+                    <option value="alt_oras" @selected($area === 'alt_oras')>Alt oraș din România</option>
                 </select>
                 @error('area_type')<div class="ee-error">{{ $message }}</div>@enderror
             </div>
@@ -127,9 +128,9 @@
                 @error('sector')<div class="ee-error">{{ $message }}</div>@enderror
             </div>
             <div class="col-md-6" data-locality-wrap hidden>
-                <label class="ee-label" for="locality">Localitate Ilfov</label>
-                <input type="text" id="locality" name="locality" value="{{ old('locality') }}" @class(['form-control', 'is-invalid' => $errors->has('locality')]) placeholder="ex. Voluntari, Otopeni…">
-                <div class="ee-help">Disponibilitatea se confirmă în ofertă, după localitate.</div>
+                <label class="ee-label" for="locality" data-locality-label data-label-ilfov="Localitate Ilfov" data-label-other="Oraș / localitate">Localitate Ilfov</label>
+                <input type="text" id="locality" name="locality" value="{{ old('locality', request('oras')) }}" @class(['form-control', 'is-invalid' => $errors->has('locality')]) placeholder="ex. Voluntari, Otopeni…" data-placeholder-ilfov="ex. Voluntari, Otopeni…" data-placeholder-other="ex. Cluj-Napoca, Iași, Brașov…" maxlength="120">
+                <div class="ee-help">Îți confirmăm disponibilitatea în zona ta odată cu oferta.</div>
                 @error('locality')<div class="ee-error">{{ $message }}</div>@enderror
             </div>
             <div class="col-md-6">

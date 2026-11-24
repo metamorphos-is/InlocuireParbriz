@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Pages;
 
 use App\Models\SiteSetting;
+use App\Support\Company;
 use App\Support\SettingSecret;
 use BackedEnum;
 use Filament\Forms\Components\Select;
@@ -51,6 +52,7 @@ class SiteSettings extends Page implements HasSchemas
         $dfs = (array) SiteSetting::getValue('dataforseo', []);
 
         $this->form->fill([
+            'company' => Company::all(),
             'brand' => [
                 'name' => $brand['name'] ?? 'InlocuireParbriz',
                 'tagline' => $brand['tagline'] ?? '',
@@ -90,6 +92,24 @@ class SiteSettings extends Page implements HasSchemas
 
         return $schema
             ->components([
+                Section::make('Date firmă (afișate pe site)')
+                    ->description('Apar în footer, pe pagina Contact și în datele structurate (Schema.org). Câmpurile goale nu se afișează.')
+                    ->columns(3)
+                    ->schema([
+                        Toggle::make('company.is_test')
+                            ->label('Date de test (nu se publică în Schema.org)')
+                            ->helperText('Dezactivează după ce completezi datele reale.')
+                            ->columnSpanFull(),
+                        TextInput::make('company.brand')->label('Nume comercial')->maxLength(120),
+                        TextInput::make('company.legal_name')->label('Denumire firmă')->maxLength(160),
+                        TextInput::make('company.cui')->label('CUI / CIF')->maxLength(20),
+                        TextInput::make('company.reg_com')->label('Nr. Registrul Comerțului')->maxLength(40),
+                        TextInput::make('company.phone')->label('Telefon')->tel()->maxLength(30),
+                        TextInput::make('company.whatsapp')->label('WhatsApp (opțional)')->tel()->maxLength(30),
+                        TextInput::make('company.email')->label('Email contact')->email()->maxLength(190),
+                        TextInput::make('company.address')->label('Adresă / sediu')->maxLength(255),
+                        TextInput::make('company.hours')->label('Program')->maxLength(120),
+                    ]),
                 Section::make('Brand')
                     ->columns(3)
                     ->schema([
@@ -181,6 +201,10 @@ class SiteSettings extends Page implements HasSchemas
             ? SettingSecret::protect($dfs['password'])
             : ($oldDfs['password'] ?? '');
         SiteSetting::setValue('dataforseo', array_merge($oldDfs, $dfs));
+
+        SiteSetting::setValue('company', array_merge(Company::DEFAULTS, $state['company'] ?? [], [
+            'is_test' => (bool) ($state['company']['is_test'] ?? false),
+        ]));
 
         SiteSetting::setValue('brand', array_merge($oldBrand, $state['brand']));
         SiteSetting::setValue('smtp', array_merge($oldSmtp, $smtp));

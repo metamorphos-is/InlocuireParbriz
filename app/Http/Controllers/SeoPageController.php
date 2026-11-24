@@ -13,9 +13,9 @@ class SeoPageController extends Controller
         'despre-noi' => [
             'name' => 'Despre noi',
             'h1' => 'Despre Înlocuire Parbriz',
-            'title' => 'Despre Înlocuire Parbriz | Sticlă auto București',
-            'meta' => 'Cine suntem și cum lucrăm: identificare parbriz, ofertă clară și montaj organizat în București.',
-            'intro' => 'Înlocuire Parbriz este dedicat șoferilor din București care au nevoie de un parbriz, o lunetă sau un geam lateral schimbat corect. Nu vindem povești despre „soluții integrate” — îți explicăm ce sticlă se potrivește mașinii tale și ce presupune montajul, înainte să înceapă lucrarea.',
+            'title' => 'Despre Înlocuire Parbriz | Cum funcționează',
+            'meta' => 'Cum funcționează Înlocuire Parbriz: preluăm cererea, identificăm sticla potrivită și o trimitem unui atelier partener verificat din zona ta.',
+            'intro' => 'Înlocuire Parbriz te ajută să rezolvi rapid un parbriz, o lunetă sau un geam lateral deteriorat. Primești oferta și montajul prin atelierele partenere verificate din orașul tău: noi preluăm cererea, verificăm ce sticlă se potrivește mașinii și o trimitem atelierului potrivit din zona ta.',
             'items' => [
                 'Identificăm sticla după datele reale ale mașinii',
                 'Îți comunicăm oferta înainte de programare',
@@ -25,11 +25,12 @@ class SeoPageController extends Controller
             'sections' => [
                 ['Cum tratăm fiecare solicitare', 'Primești o cerere, verificăm marca, modelul, anul și tipul de geam, apoi revenim cu o ofertă. Dacă lipseau date importante, te întrebăm înainte să propunem o sticlă greșită.'],
                 ['Ce contează la o lucrare corectă', 'Pregătirea canalului de lipire, poziționarea exactă, adezivul potrivit și timpul de așteptare. Preferăm să amânăm o intervenție decât să lipim într-un loc sau pe o vreme care compromite rezultatul.'],
-                ['Transparență', 'Nu publicăm prețuri inventate, nu inventăm parteneriate cu asigurători și nu pretindem sedii în fiecare sector. Lucrăm în București (sectoarele 1–6); pentru Ilfov confirmăm disponibilitatea după localitate.'],
+                ['Cine face lucrarea', 'Montajul și reparațiile sunt făcute de ateliere partenere verificate, cu experiență în sticlă auto. Noi coordonăm cererea: verificăm datele mașinii, alegem atelierul potrivit din zona ta și urmărim ca oferta să ajungă la tine.'],
+                ['Transparență', 'Nu publicăm prețuri inventate, nu inventăm parteneriate cu asigurători și nu pretindem ateliere acolo unde nu avem. În București și Ilfov lucrăm deja; pentru alte orașe îți confirmăm disponibilitatea odată cu oferta.'],
             ],
             'faq' => [
-                ['Sunteți un marketplace?', 'Nu. Site-ul este al brandului Înlocuire Parbriz — cererea ajunge la echipa noastră.'],
-                ['Unde lucrați?', 'În București, pe sectoarele 1–6. Pentru Ilfov, confirmăm pe baza adresei din cerere.'],
+                ['Cine îmi face montajul?', 'Un atelier partener verificat din zona ta. Echipa Înlocuire Parbriz preia cererea, verifică detaliile mașinii și o transmite atelierului potrivit, care îți face oferta și lucrarea.'],
+                ['Unde lucrați?', 'În București (sectoarele 1–6) și Ilfov. Pentru alte orașe din țară, trimite cererea: îți confirmăm disponibilitatea unui atelier partener în zona ta înainte de orice angajament.'],
                 ['Cum încep?', 'Din pagina Solicită ofertă: trimite detaliile mașinii și, dacă poți, o fotografie cu avaria.'],
             ],
         ],

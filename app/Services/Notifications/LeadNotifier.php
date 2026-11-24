@@ -8,6 +8,7 @@ use App\Models\NotificationTemplate;
 use App\Models\Provider;
 use App\Models\SiteSetting;
 use App\Services\Sms\SmsoClient;
+use App\Support\SettingSecret;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -60,7 +61,7 @@ class LeadNotifier
         $tpl = NotificationTemplate::query()->where('key', $templateKey)->where('is_active', true)->first();
         $body = $this->render($tpl?->body ?? 'Cerere {reference} — InlocuireParbriz.ro', $vars);
 
-        $client = new SmsoClient((string) ($smso['api_key'] ?? ''));
+        $client = new SmsoClient((string) SettingSecret::reveal($smso['api_key'] ?? ''));
         $sender = $smso['sender'] ?? '';
         $result = $client->send($to, $sender, $body, 'transactional');
 
@@ -89,7 +90,19 @@ class LeadNotifier
         $body = $this->render($tpl?->body ?? 'Cerere {reference}', $vars);
 
         try {
-            Mail::raw($body, function ($message) use ($to, $subject, $smtp) {
+            // Folosim serverul SMTP configurat în admin (Setări site), nu cel din .env.
+            config(['mail.mailers.site_smtp' => [
+                'transport' => 'smtp',
+                'host' => $smtp['host'] ?? null,
+                'port' => (int) ($smtp['port'] ?? 465),
+                'username' => $smtp['username'] ?? null,
+                'password' => SettingSecret::reveal($smtp['password'] ?? null),
+                'scheme' => ($smtp['encryption'] ?? '') === 'ssl' ? 'smtps' : null,
+                'timeout' => 20,
+            ]]);
+            $mailer = filled($smtp['host'] ?? null) ? Mail::mailer('site_smtp') : Mail::mailer();
+
+            $mailer->raw($body, function ($message) use ($to, $subject, $smtp) {
                 $message->to($to)->subject($subject);
                 if (! empty($smtp['from_address'])) {
                     $message->from($smtp['from_address'], $smtp['from_name'] ?? 'InlocuireParbriz');

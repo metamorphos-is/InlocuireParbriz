@@ -8,8 +8,9 @@
 | opțiuni de formular. Chei = slug-urile din docs/discovery/url-architecture.md.
 |
 | Reguli de conținut: o singură companie, ton profesional, fără cifre,
-| certificări, parteneriate sau recenzii nedovedite. Nicio mențiune despre
-| prestatori, marketplace, rețea sau alocarea cererilor.
+| certificări, parteneriate sau recenzii nedovedite. Modelul se prezintă onest
+| și discret: „oferta și montajul prin atelierele partenere verificate din zona ta”
+| (decizia proprietarului, 24.11.2026). Nu detaliem alocarea internă a cererilor.
 */
 
 return [

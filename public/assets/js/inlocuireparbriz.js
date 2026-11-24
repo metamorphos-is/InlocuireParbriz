@@ -64,15 +64,21 @@
         var localityWrap = form.querySelector('[data-locality-wrap]');
         var sector = form.querySelector('[data-sector-select]');
         if (!area || !sectorWrap || !localityWrap) return;
+        var isBucharest = area.value === 'bucuresti';
         var isIlfov = area.value === 'ilfov';
-        sectorWrap.hidden = isIlfov;
-        localityWrap.hidden = !isIlfov;
+        sectorWrap.hidden = !isBucharest;
+        localityWrap.hidden = isBucharest;
         if (sector) {
-            sector.required = !isIlfov;
-            if (isIlfov) sector.value = '';
+            sector.required = isBucharest;
+            if (!isBucharest) sector.value = '';
         }
         var locality = form.querySelector('#locality');
-        if (locality) locality.required = isIlfov;
+        var label = form.querySelector('[data-locality-label]');
+        if (locality) {
+            locality.required = !isBucharest;
+            locality.placeholder = isIlfov ? locality.dataset.placeholderIlfov : locality.dataset.placeholderOther;
+        }
+        if (label) label.textContent = isIlfov ? label.dataset.labelIlfov : label.dataset.labelOther;
     }
 
     document.querySelectorAll('[data-lead-form]').forEach(function (form) {

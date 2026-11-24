@@ -1,3 +1,4 @@
+@php($company = \App\Support\Company::all())
 <footer class="ee-footer">
     <div class="container">
         <div class="row gy-4">
@@ -5,7 +6,7 @@
                 <a class="ee-logo ee-logo--light" href="{{ route('home') }}">
                     <span class="ee-logo__text">Înlocuire<strong>Parbriz</strong></span>
                 </a>
-                <p class="ee-footer__text mt-3">Înlocuire și reparație parbrize, lunete și geamuri laterale în București. Trimite detaliile mașinii pentru o ofertă pe tipul corect de geam.</p>
+                <p class="ee-footer__text mt-3">Înlocuire și reparație parbrize, lunete și geamuri laterale. Trimiți detaliile mașinii, iar oferta și montajul vin prin atelierele partenere verificate din zona ta.</p>
                 <a href="{{ route('lead.create') }}" class="ee-btn ee-btn--amber mt-2">Solicită ofertă</a>
             </div>
             <div class="col-6 col-lg-3">
@@ -39,11 +40,21 @@
                     <li><a href="{{ route('lead.create') }}">Solicită ofertă</a></li>
                     <li><a href="{{ route('privacy') }}">Politica de confidențialitate</a></li>
                 </ul>
-                <p class="ee-footer__text mt-3 mb-0">București — sectoarele 1–6. Ilfov pe confirmare, după localitate.</p>
+                <ul class="ee-footer__list mt-3">
+                    @if (filled($company['phone']))
+                        <li><a href="tel:{{ \App\Support\Company::phoneHref() }}" data-track="phone_click">{{ $company['phone'] }}</a></li>
+                    @endif
+                    @if (filled($company['email']))
+                        <li><a href="mailto:{{ $company['email'] }}" data-track="email_click">{{ $company['email'] }}</a></li>
+                    @endif
+                    @if (filled($company['hours']))
+                        <li>{{ $company['hours'] }}</li>
+                    @endif
+                </ul>
             </div>
         </div>
         <div class="ee-footer__bottom">
-            <span>&copy; {{ date('Y') }} Înlocuire Parbriz. Toate drepturile rezervate.</span>
+            <span>&copy; {{ date('Y') }} {{ $company['brand'] }}@if (filled($company['legal_name'])) · {{ $company['legal_name'] }}@endif @if (filled($company['cui'])) · CUI {{ $company['cui'] }}@endif @if (filled($company['reg_com'])) · {{ $company['reg_com'] }}@endif</span>
             <a href="{{ route('privacy') }}">Confidențialitate</a>
         </div>
     </div>

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\City;
 use App\Models\CitySector;
 use App\Models\Lead;
+use App\Services\Notifications\LeadNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -45,7 +46,7 @@ class LeadController extends Controller
             'phone' => ['required', 'string', 'regex:/^[0-9+()\s.\-]{9,20}$/'],
             'email' => ['nullable', 'email:rfc', 'max:190'],
             'category' => ['required', Rule::in($services)],
-            'area_type' => ['required', Rule::in(['bucuresti', 'ilfov'])],
+            'area_type' => ['required', Rule::in(['bucuresti', 'ilfov', 'alt_oras'])],
             'sector' => ['nullable', 'integer', Rule::in($sectors)],
             'locality' => ['nullable', 'string', 'max:120'],
             'description' => ['required', 'string', 'min:10', 'max:2000'],
@@ -64,7 +65,7 @@ class LeadController extends Controller
             'phone.required' => 'Te rugăm să completezi numărul de telefon.',
             'phone.regex' => 'Numărul de telefon nu pare valid.',
             'category.required' => 'Alege serviciul de care ai nevoie.',
-            'area_type.required' => 'Alege București sau Ilfov.',
+            'area_type.required' => 'Alege zona: București, Ilfov sau alt oraș.',
             'description.required' => 'Descrie pe scurt problema.',
             'description.min' => 'Adaugă câteva detalii (minim 10 caractere).',
             'consent.accepted' => 'Este necesar acordul pentru prelucrarea datelor.',
@@ -76,6 +77,10 @@ class LeadController extends Controller
 
         if (($data['area_type'] ?? '') === 'ilfov' && blank($data['locality'] ?? null)) {
             return back()->withErrors(['locality' => 'Scrie localitatea din Ilfov.'])->withInput();
+        }
+
+        if (($data['area_type'] ?? '') === 'alt_oras' && blank($data['locality'] ?? null)) {
+            return back()->withErrors(['locality' => 'Scrie orașul sau localitatea.'])->withInput();
         }
 
         $data['urgency'] = (bool) ($data['urgency'] ?? false);
@@ -98,7 +103,9 @@ class LeadController extends Controller
         try {
             if (class_exists(Lead::class) && Schema::hasTable('leads')) {
                 $serviceName = config("inlocuireparbriz.services.{$data['category']}.name", $data['category']);
-                $city = City::query()->where('slug', config('inlocuireparbriz.city_slug', 'bucuresti'))->first();
+                $city = ($data['area_type'] ?? '') === 'alt_oras'
+                    ? $this->matchCity((string) ($data['locality'] ?? ''))
+                    : City::query()->where('slug', config('inlocuireparbriz.city_slug', 'bucuresti'))->first();
                 $sector = null;
                 if (($data['area_type'] ?? '') === 'bucuresti' && ! empty($data['sector']) && $city) {
                     $sector = CitySector::query()
@@ -107,9 +114,11 @@ class LeadController extends Controller
                         ->first();
                 }
 
-                $address = ($data['area_type'] ?? '') === 'ilfov'
-                    ? 'Ilfov, '.($data['locality'] ?? '')
-                    : 'București, Sectorul '.($data['sector'] ?? '');
+                $address = match ($data['area_type'] ?? '') {
+                    'ilfov' => 'Ilfov, '.($data['locality'] ?? ''),
+                    'alt_oras' => trim((string) ($data['locality'] ?? '')),
+                    default => 'București, Sectorul '.($data['sector'] ?? ''),
+                };
 
                 $lead = Lead::create([
                     'category_id' => Category::query()->where('slug', 'inlocuire-parbrize')->value('id'),
@@ -137,6 +146,16 @@ class LeadController extends Controller
 
                 Log::info('Lead nou salvat', ['reference' => $lead->reference, 'category' => $data['category']]);
 
+                // Notificări (email admin + SMS confirmare client). Respectă comutatoarele din Setări;
+                // o eroare de trimitere nu are voie să piardă cererea.
+                try {
+                    $notifier = app(LeadNotifier::class);
+                    $notifier->notifyAdminNewLead($lead);
+                    $notifier->notifyCustomerReceived($lead);
+                } catch (Throwable $e) {
+                    Log::error('Notificare lead nou eșuată', ['reference' => $lead->reference, 'error' => $e->getMessage()]);
+                }
+
                 return $lead->reference;
             }
         } catch (Throwable $e) {
@@ -144,6 +163,20 @@ class LeadController extends Controller
         }
 
         return $this->persistStub($data, $ipHash);
+    }
+
+    /** Potrivește orașul scris de client cu un oraș din admin (după slug sau nume), dacă există. */
+    protected function matchCity(string $name): ?City
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return null;
+        }
+        $slug = Str::slug($name);
+
+        return City::query()->where('slug', $slug)->first()
+            ?? City::query()->where('name', $name)->first()
+            ?? City::query()->where('slug', 'like', $slug.'%')->first();
     }
 
     protected function persistStub(array $data, string $ipHash): string

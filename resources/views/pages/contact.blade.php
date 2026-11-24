@@ -14,18 +14,25 @@
     <div class="container">
         <div class="row g-5">
             <div class="col-lg-4">
+                @php($company = \App\Support\Company::all())
                 <div class="ee-feature ee-feature--stack">
                     <span class="ee-feature__icon">@include('partials.icon', ['name' => 'form', 'size' => 22])</span>
                     <div>
-                        <h2 class="ee-h4">Formularul e cel mai rapid canal</h2>
-                        <p>Nu publicăm încă un număr de telefon pe site. Completează formularul — te contactăm noi.</p>
+                        <h2 class="ee-h4">Date de contact</h2>
+                        <p>
+                            @if (filled($company['phone']))Telefon: <a href="tel:{{ \App\Support\Company::phoneHref() }}" data-track="phone_click">{{ $company['phone'] }}</a><br>@endif
+                            @if (filled($company['email']))Email: <a href="mailto:{{ $company['email'] }}" data-track="email_click">{{ $company['email'] }}</a><br>@endif
+                            @if (filled($company['hours'])){{ $company['hours'] }}<br>@endif
+                            @if (filled($company['address'])){{ $company['address'] }}@endif
+                        </p>
+                        <p class="mb-0">Cel mai rapid: formularul de alături, cu detaliile mașinii.</p>
                     </div>
                 </div>
                 <div class="ee-feature ee-feature--stack">
                     <span class="ee-feature__icon">@include('partials.icon', ['name' => 'pin', 'size' => 22])</span>
                     <div>
                         <h2 class="ee-h4">Zone deservite</h2>
-                        <p>București — Sectorul 1 până la Sectorul 6. Pentru Ilfov, confirmăm disponibilitatea după localitatea din cerere.</p>
+                        <p>București (sectoarele 1–6) și Ilfov. Pentru alte orașe, trimite cererea și îți confirmăm disponibilitatea unui atelier partener în zona ta.</p>
                     </div>
                 </div>
                 <div class="ee-feature ee-feature--stack">
