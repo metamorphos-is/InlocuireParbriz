@@ -119,6 +119,26 @@ class SeoWave2Test extends TestCase
         }
     }
 
+    public function test_sitemap_has_priority_and_changefreq_by_page_type(): void
+    {
+        $this->seed();
+        $xml = simplexml_load_string($this->get('/sitemap.xml')->assertOk()->getContent());
+        $map = [];
+        foreach ($xml->url as $u) {
+            $this->assertNotSame('', (string) $u->priority, (string) $u->loc);
+            $this->assertNotSame('', (string) $u->changefreq, (string) $u->loc);
+            $map[(string) $u->loc] = (string) $u->priority;
+        }
+        $base = 'https://inlocuireparbriz.ro';
+        $this->assertSame('1.0', $map[$base.'/'] ?? $map[$base]);
+        $this->assertSame('0.9', $map[$base.'/reparatie-parbriz']);
+        $this->assertSame('0.9', $map[$base.'/inlocuire-parbriz-bucuresti']);
+        $this->assertSame('0.7', $map[$base.'/inlocuire-parbriz-bucuresti/sector-1']);
+        $this->assertSame('0.7', $map[$base.'/parbriz-auto/volkswagen/passat-b6']);
+        $this->assertSame('0.6', $map[$base.'/blog/parbriz-iarna-fisuri']);
+        $this->assertSame('0.3', $map[$base.'/politica-de-confidentialitate']);
+    }
+
     public function test_internal_links_to_unpublished_content_are_rendered_as_text(): void
     {
         $this->seed();

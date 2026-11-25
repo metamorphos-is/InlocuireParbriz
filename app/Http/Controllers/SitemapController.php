@@ -7,7 +7,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * Sitemap XML simplu și curat: doar paginile indexabile + <lastmod>.
- * Fără <image:image> (Google găsește imaginile în pagini) și fără changefreq/priority (ignorate de Google).
+ * Fără <image:image> (Google găsește imaginile în pagini). Cu <changefreq> și <priority> pe tipul paginii
+ * (Google le ignoră, dar Bing, Yandex și uneltele SEO le folosesc ca semnal de importanță relativă).
  */
 class SitemapController extends Controller
 {
@@ -73,12 +74,47 @@ class SitemapController extends Controller
                 continue; // fără duplicate
             }
             $seen[$loc] = true;
-            $clean[] = ['loc' => $loc, 'lastmod' => Carbon::parse($u['lastmod'])->toAtomString()];
+            [$priority, $changefreq] = self::rank($path);
+            $clean[] = [
+                'loc' => $loc,
+                'lastmod' => Carbon::parse($u['lastmod'])->toAtomString(),
+                'changefreq' => $changefreq,
+                'priority' => $priority,
+            ];
         }
 
         return response()
             ->view('sitemap', ['urls' => $clean])
             ->header('Content-Type', 'application/xml; charset=UTF-8')
             ->header('Cache-Control', 'public, max-age=900');
+    }
+
+    /**
+     * Prioritate și frecvență pe tipul paginii, după cale: orice pagină nouă (inclusiv cele publicate
+     * automat din coadă) primește valoarea tipului ei fără altă configurare.
+     *
+     * @return array{0: string, 1: string} [priority, changefreq]
+     */
+    public static function rank(string $path): array
+    {
+        $path = '/'.trim($path, '/');
+        $services = array_map(fn ($s) => '/'.$s, array_keys(config('inlocuireparbriz.services', [])));
+
+        return match (true) {
+            $path === '/' => ['1.0', 'daily'],
+            in_array($path, $services, true), $path === '/servicii' => ['0.9', 'weekly'],
+            $path === '/cerere-oferta' => ['0.8', 'monthly'],
+            str_starts_with($path, '/inlocuire-parbriz-bucuresti/sector-') => ['0.7', 'weekly'],
+            str_starts_with($path, '/inlocuire-parbriz-') => ['0.8', 'weekly'], // orașe
+            $path === '/parbriz-auto' => ['0.8', 'daily'],
+            substr_count($path, '/') === 2 && str_starts_with($path, '/parbriz-auto/') => ['0.7', 'monthly'], // modele
+            str_starts_with($path, '/parbriz-auto/') => ['0.7', 'weekly'], // mărci
+            $path === '/blog' => ['0.7', 'daily'],
+            str_starts_with($path, '/blog/') => ['0.6', 'monthly'],
+            $path === '/intrebari-frecvente' => ['0.6', 'monthly'],
+            $path === '/contact' => ['0.5', 'monthly'],
+            $path === '/despre-noi' => ['0.4', 'monthly'],
+            default => ['0.3', 'yearly'], // politica de confidențialitate și alte pagini legale
+        };
     }
 }
