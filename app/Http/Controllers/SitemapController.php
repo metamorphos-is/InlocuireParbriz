@@ -3,52 +3,62 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 
+/**
+ * Sitemap XML simplu și curat: doar paginile indexabile + <lastmod>.
+ * Fără <image:image> (Google găsește imaginile în pagini) și fără changefreq/priority (ignorate de Google).
+ */
 class SitemapController extends Controller
 {
     public function __invoke(): Response
     {
-        $urls = [
-            ['loc' => route('home'), 'changefreq' => 'weekly', 'priority' => '1.0'],
-        ];
+        // Data ultimei publicări a codului: folosită pentru paginile fixe (servicii, contact etc.).
+        $deployedAt = Carbon::createFromTimestamp(max(
+            @filemtime(base_path('routes/web.php')) ?: 0,
+            @filemtime(base_path('config/inlocuireparbriz.php')) ?: 0,
+        ) ?: time());
+
+        $urls = [['loc' => route('home'), 'lastmod' => $deployedAt]];
 
         foreach (array_keys(config('inlocuireparbriz.services')) as $slug) {
-            $urls[] = ['loc' => url('/'.$slug), 'changefreq' => 'weekly', 'priority' => '0.8'];
+            $urls[] = ['loc' => url('/'.$slug), 'lastmod' => $deployedAt];
         }
 
         foreach (\App\Models\City::query()->withPublicPage()->orderBy('sort_order')->get() as $city) {
-            $urls[] = ['loc' => $city->url(), 'changefreq' => 'weekly', 'priority' => '0.8', 'images' => \App\Support\Img::forCity($city, (int) $city->sort_order), 'lastmod' => $city->updated_at];
+            $urls[] = ['loc' => $city->url(), 'lastmod' => $city->updated_at ?? $deployedAt];
         }
 
         foreach (range(1, 6) as $n) {
-            $urls[] = [
-                'loc' => url("/inlocuire-parbriz-bucuresti/sector-{$n}"),
-                'changefreq' => 'weekly',
-                'priority' => '0.7',
-            ];
+            $urls[] = ['loc' => url("/inlocuire-parbriz-bucuresti/sector-{$n}"), 'lastmod' => $deployedAt];
         }
 
-        $urls[] = ['loc' => route('blog.index'), 'changefreq' => 'weekly', 'priority' => '0.6'];
-        foreach (\App\Models\Post::query()->published()->orderByDesc('published_at')->get() as $post) {
-            $urls[] = ['loc' => $post->url(), 'changefreq' => 'monthly', 'priority' => '0.6', 'images' => [\App\Support\Img::forPost($post)], 'lastmod' => $post->updated_at];
+        $posts = \App\Models\Post::query()->published()->orderByDesc('published_at')->get();
+        $urls[] = ['loc' => route('blog.index'), 'lastmod' => $posts->max('updated_at') ?? $deployedAt];
+        foreach ($posts as $post) {
+            $urls[] = ['loc' => $post->url(), 'lastmod' => $post->updated_at ?? $post->published_at ?? $deployedAt];
         }
 
-        $urls[] = ['loc' => route('services'), 'changefreq' => 'weekly', 'priority' => '0.8'];
-        $urls[] = ['loc' => route('contact'), 'changefreq' => 'monthly', 'priority' => '0.5'];
-        $urls[] = ['loc' => route('lead.create'), 'changefreq' => 'monthly', 'priority' => '0.6'];
-        $urls[] = ['loc' => url('/despre-noi'), 'changefreq' => 'monthly', 'priority' => '0.4'];
+        $urls[] = ['loc' => route('services'), 'lastmod' => $deployedAt];
+        $urls[] = ['loc' => route('contact'), 'lastmod' => $deployedAt];
+        $urls[] = ['loc' => route('lead.create'), 'lastmod' => $deployedAt];
+        $urls[] = ['loc' => url('/despre-noi'), 'lastmod' => $deployedAt];
+        $urls[] = ['loc' => route('privacy'), 'lastmod' => $deployedAt];
 
-        // Imaginile paginilor fixe (config/images.php) → <image:image>, pentru Google Images.
-        foreach ($urls as &$u) {
+        $seen = [];
+        $clean = [];
+        foreach ($urls as $u) {
             $path = parse_url($u['loc'], PHP_URL_PATH) ?: '/';
-            $u['images'] ??= \App\Support\Img::forPath($path);
-            $u['loc'] = \App\Support\Seo::canonical($path);
-            $u['lastmod'] = isset($u['lastmod']) ? \Illuminate\Support\Carbon::parse($u['lastmod'])->toAtomString() : null;
+            $loc = \App\Support\Seo::canonical($path);
+            if (isset($seen[$loc])) {
+                continue; // fără duplicate
+            }
+            $seen[$loc] = true;
+            $clean[] = ['loc' => $loc, 'lastmod' => Carbon::parse($u['lastmod'])->toAtomString()];
         }
-        unset($u);
 
         return response()
-            ->view('sitemap', ['urls' => $urls])
+            ->view('sitemap', ['urls' => $clean])
             ->header('Content-Type', 'application/xml; charset=UTF-8')
             ->header('Cache-Control', 'public, max-age=900');
     }
