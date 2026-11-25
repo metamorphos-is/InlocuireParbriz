@@ -13,7 +13,7 @@ return [
         'brand' => 'volkswagen', 'slug' => 'passat-b6', 'name' => 'Passat B6', 'years' => '2005–2010', 'bodies' => 'berlină și break (Variant)',
         'adas' => 'none', 'volume' => 750, 'now' => true, 'sort' => 1,
         'primary' => 'parbriz passat b6', 'secondary' => ['parbriz passat b6 pret', 'inlocuire parbriz passat b6 pret', 'pret parbriz vw passat b6 cu senzori'],
-        'intro' => 'Passat B6 este cel mai căutat model când vine vorba de parbriz nou, cu peste 700 de căutări pe lună. Majoritatea exemplarelor au senzor de ploaie, iar diferențele dintre parbrize stau în suportul senzorului și în banda colorată de sus.',
+        'intro' => 'Passat B6 este unul dintre modelele pentru care se schimbă cel mai des parbrizul. Majoritatea exemplarelor au senzor de ploaie, iar diferențele dintre parbrize stau în suportul senzorului și în banda colorată de sus.',
         'variants' => ['Parbriz simplu, fără senzori, cu tentă verde', 'Cu suport pentru senzor de ploaie și lumină (cea mai frecventă variantă)', 'Cu bandă colorată (degrade) în partea de sus', 'Variante cu strat reflectorizant pentru căldură, la unele exemplare bine echipate'],
         'sections' => [
             ['Passat B6 berlină sau Variant: contează?', 'Berlina și breakul Variant folosesc în general același parbriz, deci caroseria nu schimbă de obicei sticla. Contează însă dotările: un B6 cu senzor de ploaie are nevoie de parbriz cu suport pentru senzor. Passat CC, deși derivat din B6, are alt parbriz, cu altă formă.'],
