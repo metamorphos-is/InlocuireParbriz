@@ -40,7 +40,11 @@ class SitemapController extends Controller
         }
 
         // Parbriz pe marcă și model: hub, mărci (doar cu modele publicate) și modele.
-        $models = \App\Models\VehiclePage::query()->models()->published()->get();
+        try {
+            $models = \App\Models\VehiclePage::query()->models()->published()->get();
+        } catch (\Throwable) {
+            $models = collect(); // tabelul apare abia după migrare; sitemap-ul nu trebuie să cadă între deploy și migrare
+        }
         if ($models->isNotEmpty()) {
             $urls[] = ['loc' => route('vehicles.index'), 'lastmod' => max($models->max('updated_at'), $deployedAt)];
             $brands = \App\Models\VehiclePage::query()->brands()->published()->whereIn('brand_slug', $models->pluck('brand_slug')->unique())->get();

@@ -85,6 +85,40 @@ class SeoWave2Test extends TestCase
         $this->assertSame(0, $publisher->publishedToday());
     }
 
+    public function test_seed_migration_is_resumable_after_a_partial_run(): void
+    {
+        // Simulează rularea întreruptă de pe server: rândurile există parțial, coada e goală.
+        PublishQueueItem::query()->delete();
+        VehiclePage::query()->whereIn('brand_slug', ['renault', 'nissan'])->where('kind', 'model')->delete();
+        Post::query()->where('slug', 'parbriz-iarna-fisuri')->delete();
+
+        (require database_path('migrations/2026_11_25_100100_seed_seo_content_wave2.php'))->up();
+
+        $this->assertSame(45, PublishQueueItem::query()->pending()->count());
+        $this->get('/parbriz-auto/renault/megane-2')->assertOk();
+        $this->get('/blog/parbriz-iarna-fisuri')->assertOk();
+        $this->assertSame(10, VehiclePage::query()->models()->published()->count());
+    }
+
+    public function test_content_fits_mysql_column_lengths(): void
+    {
+        // SQLite (teste) nu verifică lungimea coloanelor; MySQL (producție) da.
+        foreach (require database_path('data/vehicle-models.php') as $m) {
+            $this->assertLessThanOrEqual(190, mb_strlen($m['years']), $m['slug']);
+            $this->assertLessThanOrEqual(190, mb_strlen($m['bodies']), $m['slug']);
+            $this->assertLessThanOrEqual(120, mb_strlen($m['primary']), $m['slug']);
+            $this->assertLessThanOrEqual(120, mb_strlen($m['name']), $m['slug']);
+            $this->assertLessThanOrEqual(120, mb_strlen($m['image'] ?? ''), $m['slug']);
+        }
+        foreach (require database_path('data/blog-posts-2.php') as $p) {
+            $this->assertLessThanOrEqual(190, mb_strlen($p['seo_title']), $p['slug']);
+            $this->assertLessThanOrEqual(320, mb_strlen($p['meta_description']), $p['slug']);
+            $this->assertLessThanOrEqual(120, mb_strlen($p['primary_keyword']), $p['slug']);
+            $this->assertLessThanOrEqual(120, mb_strlen($p['related_service']), $p['slug']);
+            $this->assertLessThanOrEqual(255, mb_strlen($p['title']), $p['slug']);
+        }
+    }
+
     public function test_internal_links_to_unpublished_content_are_rendered_as_text(): void
     {
         $this->seed();

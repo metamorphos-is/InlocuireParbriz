@@ -20,6 +20,12 @@ return new class extends Migration
             return;
         }
 
+        DB::transaction(fn () => $this->seed());
+        \App\Support\Navigation::forget();
+    }
+
+    private function seed(): void
+    {
         $now = now();
         $queue = [];
         $short = ['volkswagen' => 'VW'];
@@ -46,7 +52,14 @@ return new class extends Migration
         }
 
         foreach ($models as $m) {
-            if (DB::table('vehicle_pages')->where('brand_slug', $m['brand'])->where('model_slug', $m['slug'])->exists()) {
+            // Reluabil: dacă o rulare anterioară s-a oprit la jumătate, rândul există deja — doar îl punem în coadă / îl publicăm.
+            $existing = DB::table('vehicle_pages')->where('brand_slug', $m['brand'])->where('model_slug', $m['slug'])->first(['id', 'is_published']);
+            if ($existing) {
+                if (! $existing->is_published && ! ($m['now'] ?? false)) {
+                    $queue[] = [VehiclePage::class, $existing->id, (int) $m['queue']];
+                } elseif (! $existing->is_published) {
+                    DB::table('vehicle_pages')->where('id', $existing->id)->update(['is_published' => true, 'published_at' => $now, 'updated_at' => $now]);
+                }
                 continue;
             }
             $brandName = $brands[$m['brand']]['brand_name'];
@@ -73,7 +86,10 @@ return new class extends Migration
         }
 
         foreach (require database_path('data/blog-posts-2.php') as $p) {
-            if (DB::table('posts')->where('slug', $p['slug'])->exists()) {
+            if ($existing = DB::table('posts')->where('slug', $p['slug'])->first(['id', 'is_published'])) {
+                if (! $existing->is_published && ! ($p['now'] ?? false)) {
+                    $queue[] = [Post::class, $existing->id, (int) $p['queue']];
+                }
                 continue;
             }
             $live = (bool) ($p['now'] ?? false);
@@ -93,7 +109,12 @@ return new class extends Migration
 
         foreach (require database_path('data/city-pages-2.php') as $c) {
             $existing = DB::table('cities')->where('slug', $c['slug'])->first();
-            if ($existing && (filled($existing->intro ?? null) || $existing->is_published)) {
+            if ($existing && $existing->is_published) {
+                continue;
+            }
+            if ($existing && filled($existing->intro ?? null)) {
+                $queue[] = [City::class, $existing->id, (int) $c['queue']]; // conținut deja existent (editat sau dintr-o rulare anterioară)
+
                 continue;
             }
             $kw = str_replace('-', ' ', $c['slug']);
@@ -126,8 +147,6 @@ return new class extends Migration
                 'created_at' => $now, 'updated_at' => $now,
             ]);
         }
-
-        \App\Support\Navigation::forget();
     }
 
     public function down(): void
