@@ -26,6 +26,8 @@
                     <li><a href="{{ url('/parbriz-pe-casco') }}">Parbriz CASCO</a></li>
                     <li><a href="{{ url('/parbrize-flote-firme') }}">Flote auto</a></li>
                     <li><a href="{{ url('/pret-inlocuire-parbriz') }}">Prețuri</a></li>
+                    <li><a href="{{ route('vehicles.index') }}">Parbriz pe model</a></li>
+                    <li><a href="{{ route('vehicles.index') }}">Parbriz pe model</a></li>
                 </ul>
             </div>
             <div class="col-6 col-lg-3">
@@ -42,6 +44,8 @@
                 <h2 class="ee-footer__title">Informații</h2>
                 <ul class="ee-footer__list">
                     <li><a href="{{ route('blog.index') }}">Blog</a></li>
+                    <li><a href="{{ route('faq') }}">Întrebări frecvente</a></li>
+                    <li><a href="{{ route('faq') }}">Întrebări frecvente</a></li>
                     <li><a href="{{ url('/despre-noi') }}">Despre noi</a></li>
                     <li><a href="{{ route('contact') }}">Contact</a></li>
                     <li><a href="{{ route('lead.create') }}">Solicită ofertă</a></li>

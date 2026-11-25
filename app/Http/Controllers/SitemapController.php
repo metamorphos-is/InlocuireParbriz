@@ -39,6 +39,21 @@ class SitemapController extends Controller
             $urls[] = ['loc' => $post->url(), 'lastmod' => $post->updated_at ?? $post->published_at ?? $deployedAt];
         }
 
+        // Parbriz pe marcă și model: hub, mărci (doar cu modele publicate) și modele.
+        $models = \App\Models\VehiclePage::query()->models()->published()->get();
+        if ($models->isNotEmpty()) {
+            $urls[] = ['loc' => route('vehicles.index'), 'lastmod' => max($models->max('updated_at'), $deployedAt)];
+            $brands = \App\Models\VehiclePage::query()->brands()->published()->whereIn('brand_slug', $models->pluck('brand_slug')->unique())->get();
+            foreach ($brands as $b) {
+                $latest = $models->where('brand_slug', $b->brand_slug)->max('updated_at');
+                $urls[] = ['loc' => $b->url(), 'lastmod' => max($latest, $b->updated_at)];
+            }
+            foreach ($models->sortByDesc('published_at') as $m) {
+                $urls[] = ['loc' => $m->url(), 'lastmod' => $m->updated_at ?? $m->published_at ?? $deployedAt];
+            }
+        }
+
+        $urls[] = ['loc' => route('faq'), 'lastmod' => max($deployedAt, Carbon::createFromTimestamp(@filemtime(config_path('faq.php')) ?: 0), $posts->max('updated_at') ?? $deployedAt)];
         $urls[] = ['loc' => route('services'), 'lastmod' => $deployedAt];
         $urls[] = ['loc' => route('contact'), 'lastmod' => $deployedAt];
         $urls[] = ['loc' => route('lead.create'), 'lastmod' => $deployedAt];

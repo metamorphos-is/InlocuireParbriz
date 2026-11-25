@@ -127,6 +127,32 @@
     </div>
 </section>
 
+{{-- PARBRIZ PE MODEL --}}
+@php
+    try {
+        $homeModels = \Illuminate\Support\Facades\Cache::remember('home:vehicles:v1', 600, fn () => \App\Models\VehiclePage::query()->models()->published()
+            ->orderByDesc('search_volume')->limit(12)->get(['brand_name', 'brand_slug', 'model_name', 'model_slug'])
+            ->map(fn ($m) => ['label' => $m->brand_name.' '.$m->model_name, 'url' => $m->path()])->all());
+    } catch (\Throwable) {
+        $homeModels = [];
+    }
+@endphp
+@if ($homeModels)
+<section class="ee-section" id="modele">
+    <div class="container">
+        <div class="ip-section-head">
+            <h2 class="ip-section-title">Parbriz pe marcă și model</h2>
+            <p>Vezi ce variante de parbriz există pentru mașina ta — cu senzor de ploaie, încălzire sau cameră — și ce trebuie verificat înainte de comandă. <a href="{{ route('vehicles.index') }}">Toate mărcile și modelele</a>.</p>
+        </div>
+        <ul class="ip-city-links">
+            @foreach ($homeModels as $m)
+                <li><a href="{{ url($m['url']) }}">@include('partials.icon', ['name' => 'windshield', 'size' => 16]) Parbriz {{ $m['label'] }}</a></li>
+            @endforeach
+        </ul>
+    </div>
+</section>
+@endif
+
 {{-- REPARAȚIE VS ÎNLOCUIRE --}}
 <section class="ee-section ee-section--alt">
     <div class="container">
@@ -199,6 +225,7 @@
                 </details>
             @endforeach
         </div>
+        <p class="mt-3"><a href="{{ route('faq') }}">Toate întrebările frecvente despre parbriz</a></p>
     </div>
 </section>
 

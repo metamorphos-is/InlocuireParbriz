@@ -52,7 +52,20 @@ class Post extends Model
     {
         $html = Str::markdown((string) $this->body, ['html_input' => 'strip', 'allow_unsafe_links' => false]);
 
+        // Linkurile interne spre articole sau modele încă nepublicate (coada zilnică) devin text simplu, ca să nu ducă la 404.
+        $html = preg_replace_callback('#<a href="(/(?:blog|parbriz-auto)/[a-z0-9/-]+)">(.*?)</a>#s', fn ($m) => self::internalLinkLive($m[1]) ? $m[0] : $m[2], $html);
+
         return preg_replace_callback('/<h2>(.*?)<\/h2>/s', fn ($m) => '<h2 id="'.Str::slug(html_entity_decode(strip_tags($m[1]))).'">'.$m[1].'</h2>', $html);
+    }
+
+    public static function internalLinkLive(string $path): bool
+    {
+        $live = once(fn () => array_merge(
+            self::query()->published()->pluck('slug')->map(fn ($s) => '/blog/'.$s)->all(),
+            VehiclePage::query()->published()->get()->map->path()->all(),
+        ));
+
+        return in_array(rtrim($path, '/'), $live, true);
     }
 
     /** Titlurile H2 din articol, pentru cuprins. */

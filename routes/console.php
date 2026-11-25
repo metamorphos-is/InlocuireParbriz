@@ -35,3 +35,12 @@ Schedule::call(fn () => Artisan::call('seo:research', ['--pending' => true]))
     ->everyMinute()
     ->name('seo-research')
     ->withoutOverlapping(30);
+
+// Publicare zilnică: o pagină/un articol nou pe zi din coada de publicare (admin → SEO & Conținut → Coadă de publicare).
+// Rulează des între 9:00 și 20:00 (ora României), dar comanda publică cel mult un element pe zi.
+Schedule::call(fn () => Artisan::call('content:publish-next'))
+    ->everyFifteenMinutes()
+    ->timezone('Europe/Bucharest')
+    ->between('9:00', '20:00')
+    ->name('content-publish-next')
+    ->withoutOverlapping(10);

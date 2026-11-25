@@ -73,3 +73,28 @@ Harta paginilor fixe e în `config/seo-map.php`; orașele și articolele își �
 
 ### Calendar editorial (următoarele articole)
 Fiecare articol trimite spre o pagină de serviciu și nu concurează cu ea: parbriz spart pe drum — ce faci; parbriz încălzit — cum îl recunoști; senzor de ploaie după schimbare; ITP cu parbriz fisurat; parbriz aburit/infiltrații după montaj; lunetă spartă — ce faci până la montaj.
+
+## 6. Etapa 2 (25.11.2026): pagini pe modele, întrebări și publicare zilnică
+
+Surse: exporturile DataForSEO `run-1.json` și `run-2.json` (1.046 cuvinte unice, fără cercetări noi). Cel mai mare cluster neacoperit: **„parbriz [model]” / „parbriz [model] preț” / „… cu senzori preț”** (≈ 5.000+ căutări/lună însumate, KD 0).
+
+### Structură nouă
+| URL | Ce țintește | Unde e conținutul |
+|---|---|---|
+| `/parbriz-auto` | hub mărci și modele (linkuri interne) | `pages/vehicles/index` |
+| `/parbriz-auto/{marca}` | „parbriz {marcă}” (ex. „parbriz bmw” 90, „parbriz dacia logan”/„parbriz logan” 350) | tabel `vehicle_pages` (kind=brand) |
+| `/parbriz-auto/{marca}/{model}` | „parbriz {model}” + variantele „preț”, „cu senzori”, „cu încălzire” | tabel `vehicle_pages` (kind=model), `database/data/vehicle-models.php` |
+| `/intrebari-frecvente` | întrebări generale (FAQPage) | `config/faq.php` |
+| `/blog/...` (14 articole noi) | întrebări informaționale (vezi mai jos) | `database/data/blog-posts-2.php` |
+| `/inlocuire-parbriz-{oras}` (8 orașe noi, 340–540/lună) | „parbrize {oraș}” | `database/data/city-pages-2.php` |
+
+Reguli păstrate: fără prețuri inventate (paginile de model explică variantele și de ce diferă prețul, oferta se face după VIN), afirmații prudente despre dotări („la unele versiuni”), acoperire „la cerere” pentru orașele noi. O pagină de marcă apare doar când are cel puțin un model publicat. Linkurile din articole spre pagini încă nepublicate devin automat text simplu (fără 404).
+
+### Publicarea zilnică
+- Tabelul `publish_queue` (admin → SEO & Conținut → **Coadă de publicare**): ordinea = `position`, opțional „nu mai devreme de”. Butoane „Publică acum” și „Mută”.
+- `php artisan content:publish-next` (scheduler, la 15 minute între 9:00 și 20:00, ora României) publică **cel mult un element pe zi** (`--list` arată coada). Publicarea manuală din admin nu consumă locul zilnic.
+- La publicare: `is_published=1`, `published_at=acum` → pagina intră imediat în `/sitemap.xml` cu `lastmod` actualizat; meniul de orașe se reîmprospătează.
+- Pentru a adăuga conținut nou în coadă: creează articolul/pagina nepublicată în admin și adaug-o în `publish_queue` (sau printr-o migrare aditivă, ca `2026_11_25_100100_seed_seo_content_wave2`).
+
+### Ordinea din coadă (≈ 45 de zile de la 26.11.2026)
+Modele mai întâi (1–9: Logan 3, Octavia 3, Golf 7, Duster, Focus 3, Megane 3, Passat B8, Sandero, BMW F30), apoi alternativ model / articol (parbriz spart, senzor de ploaie, silicon parbriz, ITP, parbriz încălzit, polish, infiltrații, lunetă spartă, tratament hidrofob, ștergătoare, HUD, cum alegi atelierul, CASCO sau RCA), apoi orașele (Botoșani, Focșani, Satu Mare, Zalău, Alba Iulia, Slobozia, Vaslui, Slatina). Publicate imediat: hub, 9 mărci, 10 modele cu volum mare (Passat B6, Golf 4, Octavia 2, Audi A4 B8, BMW E90, Focus 2, Astra H, Logan 1, Megane 2, Qashqai J10), `/intrebari-frecvente` și articolul de sezon „Parbrizul iarna”.

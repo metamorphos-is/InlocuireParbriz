@@ -34,6 +34,6 @@ class ImagesTest extends TestCase
             $this->assertDoesNotMatchRegularExpression('#<img(?![^>]*\balt="[^"]+")[^>]*>#', $html, $path.' are imagine fără alt');
         }
         $this->get('/inlocuire-parbriz-brasov')->assertDontSee('ip-coverage__icon', false)->assertSee('ip-photo--hero', false);
-        $this->get('/sitemap.xml')->assertSee('<image:loc>', false);
+        $this->get('/sitemap.xml')->assertDontSee('<image:loc>', false); // sitemap curat: imaginile le găsește Google în pagini
     }
 }

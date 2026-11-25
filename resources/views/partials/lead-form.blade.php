@@ -61,12 +61,12 @@
         <div class="row g-3">
             <div class="col-md-4">
                 <label class="ee-label" for="vehicle_brand">Marcă</label>
-                <input type="text" id="vehicle_brand" name="vehicle_brand" value="{{ old('vehicle_brand') }}" @class(['form-control', 'is-invalid' => $errors->has('vehicle_brand')]) placeholder="ex. Volkswagen" autocomplete="off">
+                <input type="text" id="vehicle_brand" name="vehicle_brand" value="{{ old('vehicle_brand', is_string(request('marca')) ? mb_substr(request('marca'), 0, 60) : null) }}" @class(['form-control', 'is-invalid' => $errors->has('vehicle_brand')]) placeholder="ex. Volkswagen" autocomplete="off">
                 @error('vehicle_brand')<div class="ee-error">{{ $message }}</div>@enderror
             </div>
             <div class="col-md-4">
                 <label class="ee-label" for="vehicle_model">Model</label>
-                <input type="text" id="vehicle_model" name="vehicle_model" value="{{ old('vehicle_model') }}" @class(['form-control', 'is-invalid' => $errors->has('vehicle_model')]) placeholder="ex. Golf" autocomplete="off">
+                <input type="text" id="vehicle_model" name="vehicle_model" value="{{ old('vehicle_model', is_string(request('model')) ? mb_substr(request('model'), 0, 80) : null) }}" @class(['form-control', 'is-invalid' => $errors->has('vehicle_model')]) placeholder="ex. Golf" autocomplete="off">
                 @error('vehicle_model')<div class="ee-error">{{ $message }}</div>@enderror
             </div>
             <div class="col-md-4">

@@ -53,6 +53,12 @@ final class SeoOverlap
                     $add($kw, $url, 'Blog: '.$p->title, 'post', $p->id, 'secundar');
                 }
             }
+            foreach (\App\Models\VehiclePage::query()->get() as $v) {
+                $add($v->primary_keyword, $v->path(), 'Auto: '.$v->fullName(), 'vehicle', $v->id, 'principal');
+                foreach ((array) $v->secondary_keywords as $kw) {
+                    $add($kw, $v->path(), 'Auto: '.$v->fullName(), 'vehicle', $v->id, 'secundar');
+                }
+            }
         } catch (Throwable) {
             // Tabelele pot lipsi înainte de migrări.
         }

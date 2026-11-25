@@ -52,6 +52,7 @@ Proiectul e lucrat de mai mulți asistenți AI. Ca să nu ne călcăm pe picioar
 - Datele firmei se editează din admin (Setări site → Date firmă, `App\Support\Company`). Cât timp „Date de test” e activ, nu intră în Schema.org.
 - **Site-ul e lansat și indexabil din 24.11.2026** (migrarea `launch_indexing`). Comutatorul rămâne în admin → Setări site → SEO. Canonical: mereu `https://inlocuireparbriz.ro/...` (`App\Support\Seo::canonical()`); `www` și `/site/public/...` fac 301 (vezi `public/.htaccess`).
 - Cât timp „Date de test” e activ, telefonul și datele juridice de test NU apar pe site (`Company::display()`).
+- Publicare zilnică de conținut (25.11.2026): coada `publish_queue` + `content:publish-next` (scheduler), câte o pagină pe zi; pagini auto în `/parbriz-auto/{marca}/{model}`. Detalii: `docs/SEO-STRATEGIE.md` §6.
 - Starea proiectului și deciziile: vezi `docs/` din repo.
 
 ## 7. Scriere (decizia proprietarului, 24.11.2026)

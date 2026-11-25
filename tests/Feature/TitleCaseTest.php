@@ -23,6 +23,11 @@ class TitleCaseTest extends TestCase
             array_push($allowed, $c->name, ...preg_split('/[\s-]+/u', $c->name), ...preg_split('/[\s-]+/u', (string) $c->county));
         }
 
+        foreach (\App\Models\VehiclePage::query()->get(['brand_name', 'model_name']) as $v) {
+            array_push($allowed, ...preg_split('/[\s-]+/u', trim($v->brand_name.' '.$v->model_name)));
+        }
+        array_push($allowed, 'VW', 'Quickclear', 'Opel', 'Eye', 'Stepway');
+
         preg_match_all('#<loc>(.*?)</loc>#', $this->get('/sitemap.xml')->getContent(), $m);
         $paths = array_merge(array_map(fn ($u) => parse_url($u, PHP_URL_PATH) ?: '/', $m[1]), ['/cerere-oferta', '/pagina-inexistenta']);
 

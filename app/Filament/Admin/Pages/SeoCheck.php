@@ -63,6 +63,9 @@ class SeoCheck extends Page
                     $links[] = ['Blog: '.$p->title, $url, "Nu trimite în text spre pagina legată ({$p->related_service})."];
                 }
             }
+            foreach (\App\Models\VehiclePage::query()->orderBy('brand_slug')->orderBy('sort_order')->get() as $v) {
+                $check('Auto: '.$v->fullName(), $v->path(), $v->primary_keyword, $v->seo_title, $v->meta_description);
+            }
         } catch (Throwable) {
             // Tabele lipsă înainte de migrări.
         }

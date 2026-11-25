@@ -3,10 +3,12 @@
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CityPageController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\SeoPageController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\VehiclePageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -44,6 +46,12 @@ Route::get('/inlocuire-parbriz-bucuresti/sector-{n}', [SeoPageController::class,
 Route::get('/inlocuire-parbriz-{city}', [CityPageController::class, 'show'])
     ->where('city', '(?!bucuresti$|ilfov$|la-domiciliu$)[a-z0-9-]+')
     ->name('city.show');
+
+// Parbriz pe marcă și model (admin → SEO & Conținut → Mărci și modele auto).
+Route::get('/parbriz-auto', [VehiclePageController::class, 'index'])->name('vehicles.index');
+Route::get('/parbriz-auto/{brand}', [VehiclePageController::class, 'brand'])->where('brand', '[a-z0-9-]+')->name('vehicles.brand');
+Route::get('/parbriz-auto/{brand}/{model}', [VehiclePageController::class, 'model'])->where(['brand' => '[a-z0-9-]+', 'model' => '[a-z0-9-]+'])->name('vehicles.model');
+Route::get('/intrebari-frecvente', FaqController::class)->name('faq');
 
 Route::view('/servicii', 'pages.services')->name('services');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
